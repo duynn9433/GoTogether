@@ -20,7 +20,7 @@ public class TransportServiceImpl implements GeneralService<Transport> {
     public List<Transport> findAll() throws Exception {
         List<Transport> transports = transportRepository.findAll();
         if (transports.isEmpty()) {
-            throw new Exception("Không tìm thấy dữ liệu");
+            throw new Exception("Không tìm thấy dữ liệu phương tiện");
         }
         return transports;
     }
@@ -29,7 +29,7 @@ public class TransportServiceImpl implements GeneralService<Transport> {
     public Transport findById(Long id) throws Exception {
         Optional<Transport> transport = transportRepository.findById(id);
         if (!transport.isPresent()) {
-            throw new Exception("Không tìm thấy dữ liệu");
+            throw new Exception("Không tìm thấy dữ liệu phương tiện");
         }
         return transport.get();
     }

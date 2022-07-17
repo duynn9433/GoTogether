@@ -13,7 +13,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByIdAndIsActiveIsTrue(Long id);
 
     @Modifying
-    @Query(value = "UPDATE client SET is_active = 0 WHERE Id = ?1",nativeQuery = true)
+    @Query(value = "UPDATE user u, client c SET u.is_active = 0 WHERE u.id = c.id AND c.id = ?1",nativeQuery = true)
     int deleteClient(Long Id);
 
 }

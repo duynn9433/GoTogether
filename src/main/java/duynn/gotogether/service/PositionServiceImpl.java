@@ -20,7 +20,7 @@ public class PositionServiceImpl implements GeneralService<Position> {
     public List<Position> findAll() throws Exception {
         List<Position> positions = positionRepository.findAll();
         if(positions.isEmpty()) {
-            throw new Exception("Không tìm thấy dữ liệu");
+            throw new Exception("Không tìm thấy dữ liệu vị trí");
         }
         return positions;
     }
@@ -29,7 +29,7 @@ public class PositionServiceImpl implements GeneralService<Position> {
     public Position findById(Long id) throws Exception {
         Optional<Position> position = positionRepository.findById(id);
         if(!position.isPresent()) {
-            throw new Exception("Không tìm thấy dữ liệu");
+            throw new Exception("Không tìm thấy dữ liệu vị trí");
         }
         return position.get();
     }
@@ -46,7 +46,6 @@ public class PositionServiceImpl implements GeneralService<Position> {
 
     @Override
     public int delete(Long id) {
-        positionRepository.deletePositionById(id);
-        return 0;
+        return positionRepository.deletePositionById(id);
     }
 }

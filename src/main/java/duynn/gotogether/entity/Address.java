@@ -1,12 +1,18 @@
 package duynn.gotogether.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "address")
 public class Address implements Serializable {
     private static final long serialVersionUID = 3L;

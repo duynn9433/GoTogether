@@ -1,12 +1,18 @@
 package duynn.gotogether.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "contact_infomation")
 public class ContactInfomation implements Serializable {
     private static final long serialVersionUID = 2L;
@@ -21,6 +27,4 @@ public class ContactInfomation implements Serializable {
 
     @Column(name = "email")
     private String email;
-
-
 }

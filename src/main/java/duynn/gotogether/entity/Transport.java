@@ -1,7 +1,10 @@
 package duynn.gotogether.entity;
 
 import duynn.gotogether.util.enumClass.TransportType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -11,6 +14,9 @@ import java.io.Serializable;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "transport")
 public class Transport implements Serializable {
     private static final long serialVersionUID = 7L;
@@ -36,9 +42,8 @@ public class Transport implements Serializable {
     @Enumerated(EnumType.STRING)
     private TransportType transportType;
 
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+//    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Client owner;
 
 }

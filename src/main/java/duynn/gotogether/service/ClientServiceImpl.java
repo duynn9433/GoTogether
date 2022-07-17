@@ -46,20 +46,17 @@ public class ClientServiceImpl implements GeneralService<Client> {
     @Override
     public Client create(Client client) throws Exception {
         client.setActive(true);
-        client = clientRepository.save(client);
-        return null;
+        return clientRepository.save(client);
     }
 
     @Override
     public Client update(Client client) throws Exception {
         client.setActive(true);
-        client = clientRepository.save(client);
-        return client;
+        return clientRepository.save(client);
     }
 
     @Override
     public int delete(Long id) {
-        clientRepository.deleteClient(id);
-        return 0;
+        return clientRepository.deleteClient(id);
     }
 }

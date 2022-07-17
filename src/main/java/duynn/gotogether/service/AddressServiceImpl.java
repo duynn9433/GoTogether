@@ -36,19 +36,16 @@ public class AddressServiceImpl implements GeneralService<Address> {
 
     @Override
     public Address create(Address address) throws Exception {
-        addressRepository.save(address);
-        return null;
+        return addressRepository.save(address);
     }
 
     @Override
     public Address update(Address address) throws Exception {
-        addressRepository.save(address);
-        return null;
+        return addressRepository.save(address);
     }
 
     @Override
     public int delete(Long id) {
-        addressRepository.deleteById(id);
-        return 0;
+        return addressRepository.deleteAddressById(id);
     }
 }

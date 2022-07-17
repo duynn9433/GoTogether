@@ -36,14 +36,12 @@ public class ContactInfoServiceImpl implements GeneralService<ContactInfomation>
 
     @Override
     public ContactInfomation create(ContactInfomation contactInfomation) throws Exception {
-        contactInfomationRepository.save(contactInfomation);
-        return contactInfomation;
+        return contactInfomationRepository.save(contactInfomation);
     }
 
     @Override
     public ContactInfomation update(ContactInfomation contactInfomation) throws Exception {
-        contactInfomationRepository.save(contactInfomation);
-        return contactInfomation;
+        return contactInfomationRepository.save(contactInfomation);
     }
 
     @Override
