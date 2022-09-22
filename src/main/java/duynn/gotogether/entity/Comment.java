@@ -1,5 +1,6 @@
 package duynn.gotogether.entity;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,10 +31,12 @@ public class Comment implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", referencedColumnName = "id")
+    @SerializedName("author")
     private Client Author;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", referencedColumnName = "id")
+    @SerializedName("receiver")
     private Client Receiver;
 
     @OneToOne(fetch = FetchType.LAZY)

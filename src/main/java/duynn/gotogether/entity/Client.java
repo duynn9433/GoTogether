@@ -1,5 +1,7 @@
 package duynn.gotogether.entity;
 
+import com.google.gson.annotations.SerializedName;
+import duynn.gotogether.entity.place.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,11 +31,15 @@ public class Client extends User implements Serializable {
     @JoinColumn(name = "position_id", referencedColumnName = "id")
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     private Position position;
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    private Location location;
 
     @Column(name = "rate", columnDefinition = "double default 0")
     private Double rate;
 
     @Column(name = "is_in_trip", columnDefinition = "boolean default false")
+    @SerializedName("is_in_trip")
     private boolean isInTrip;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade=CascadeType.ALL)

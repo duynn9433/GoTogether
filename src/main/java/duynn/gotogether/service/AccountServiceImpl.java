@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -61,5 +62,13 @@ public class AccountServiceImpl implements GeneralService<Account> {
     public int delete(Long id) {
         accountRepository.deleteAccountById(id);
         return 0;
+    }
+
+    public boolean login(Account data) {
+        Account account = accountRepository.findAccountByUsername(data.getUsername());
+        if(account == null) {
+            return false;
+        }
+        return account.getPassword().equals(data.getPassword());
     }
 }

@@ -1,5 +1,7 @@
 package duynn.gotogether.entity;
 
+import com.google.gson.annotations.SerializedName;
+import duynn.gotogether.entity.place.Place;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,24 +29,37 @@ public class ClientTrip implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pickup_position_id", referencedColumnName = "id")
     private Position pickUpPosition;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pickup_place_id", referencedColumnName = "id")
+    @SerializedName("pickup_place")
+    private Place pickUpPlace;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dropoff_position_id", referencedColumnName = "id")
     private Position dropOffPosition;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dropoff_place_id", referencedColumnName = "id")
+    @SerializedName("dropoff_place")
+    private Place dropOffplace;
 
     @Column(name = "pickup_time")
+    @SerializedName("pickup_time")
     private Date pickUpTime;
 
     @Column(name = "number_of_people", nullable = false)
+    @SerializedName("number_of_people")
     private Integer numOfPeople;
 
     @Column(name = "price_per_km", nullable = false)
+    @SerializedName("price_per_km")
     private Double pricePerKmForOnePeople;
 
     @Column(name = "is_accepted", nullable = false)
+    @SerializedName("is_accepted")
     private boolean isAccepted;
 
     @Column(name = "is_canceled", nullable = false)
+    @SerializedName("is_canceled")
     private boolean isCanceled;
 
     @OneToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package duynn.gotogether.entity;
 
+import com.google.gson.annotations.SerializedName;
 import duynn.gotogether.util.enumClass.TransportType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class Transport implements Serializable {
     private String name;
 
     @Column(name = "license_plate", nullable = false)
+    @SerializedName("license_plate")
     private String licensePlate;
 
     @Column(name = "desciption")
@@ -40,10 +42,12 @@ public class Transport implements Serializable {
 
     @Column(name = "transport_type", nullable = false)
     @Enumerated(EnumType.STRING)
+    @SerializedName("transport_type")
     private TransportType transportType;
 
 //    @JoinColumn(name = "owner_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @SerializedName("owner")
     private Client owner;
 
 }

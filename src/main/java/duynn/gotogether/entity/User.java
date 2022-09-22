@@ -1,10 +1,11 @@
 package duynn.gotogether.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,6 +46,7 @@ public class User implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "contact_infomation_id", nullable = false, referencedColumnName = "id")
+    @SerializedName("contact_information")
     private ContactInfomation contactInfomation;
 
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)

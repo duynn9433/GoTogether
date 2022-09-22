@@ -1,5 +1,6 @@
 package duynn.gotogether.entity;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class ContactInfomation implements Serializable {
     private Long id;
 
     @Column(name = "phone_number", nullable = false)
+    @SerializedName("phone_number")
     private String phoneNumber;
 
     @Column(name = "email")

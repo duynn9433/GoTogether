@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "UPDATE user u SET is_active = 0 WHERE u.id = ?1",nativeQuery = true)
     int deleteUserById(Long Id);
 
+    Optional<User> findUserByAccount_Username(String username);
+
 }
