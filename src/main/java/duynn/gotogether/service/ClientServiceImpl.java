@@ -23,6 +23,8 @@ public class ClientServiceImpl implements GeneralService<Client> {
     FullnameRepository fullnameRepository;
     @Autowired
     PositionRepository positionRepository;
+    @Autowired
+    TransportRepository transportRepository;
 
 
     @Override
@@ -46,7 +48,15 @@ public class ClientServiceImpl implements GeneralService<Client> {
     @Override
     public Client create(Client client) throws Exception {
         client.setActive(true);
-        return clientRepository.save(client);
+        Client client1 = clientRepository.save(client);
+        if (client1 == null) {
+            throw new Exception("Không thể tạo mới dữ liệu");
+        }
+        for(Transport transport : client.getTransports()){
+            transport.getOwner().setId(client1.getId());
+            transportRepository.save(transport);
+        }
+        return client1;
     }
 
     @Override

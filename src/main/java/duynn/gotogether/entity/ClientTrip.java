@@ -17,7 +17,7 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "trip")
+@Table(name = "client_trip")
 public class ClientTrip implements Serializable {
     private static final long serialVersionUID = 10L;
 

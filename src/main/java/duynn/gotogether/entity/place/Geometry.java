@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 @Entity
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "geometry")
@@ -21,9 +21,15 @@ public class Geometry implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator = "geometry_seq")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
-    @SerializedName("location")
     private Location location;
 
+    @Override
+    public String toString() {
+        return "Geometry{" +
+                "id=" + id +
+                ", location=" + location +
+                '}';
+    }
 }

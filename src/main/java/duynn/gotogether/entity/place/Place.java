@@ -25,20 +25,16 @@ public class Place implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator = "place_seq")
     private Long id;
 
-    @SerializedName("place_id")
     @Column(name = "place_id", nullable = false)
     private String placeID;
 
-    @SerializedName("formatted_address")
     @Column(name = "formatted_address", nullable = false)
     private String formattedAddress;
 
-    @SerializedName("geometry")
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "geometry_id", referencedColumnName = "id")
     private Geometry geometry;
 
-    @SerializedName("name")
     @Column(name = "name", nullable = false)
     private String name;
 

@@ -46,7 +46,6 @@ public class User implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "contact_infomation_id", nullable = false, referencedColumnName = "id")
-    @SerializedName("contact_information")
     private ContactInfomation contactInfomation;
 
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
@@ -54,11 +53,10 @@ public class User implements Serializable {
     private Address address;
 
     @Column(name = "is_active", nullable = false)
-    @JsonIgnore
     private boolean isActive;
 
-    public String getFullname() {
-        return fullname.getFirstName() +" "+ fullname.getMiddleName() +" " + fullname.getLastName();
-    }
+//    public String getFullname() {
+//        return fullname.getFirstName() +" "+ fullname.getMiddleName() +" " + fullname.getLastName();
+//    }
 
 }

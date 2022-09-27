@@ -2,11 +2,9 @@ package duynn.gotogether.entity;
 
 import com.google.gson.annotations.SerializedName;
 import duynn.gotogether.entity.place.Location;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,7 +12,8 @@ import java.util.List;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,10 +22,10 @@ import java.util.List;
 public class Client extends User implements Serializable {
     private static final long serialVersionUID = 5L;
 
-    @Id
-    @SequenceGenerator(name = "client_seq", sequenceName = "client_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator = "client_seq")
-    private Long id;
+//    @Id
+//    @SequenceGenerator(name = "client_seq", sequenceName = "client_seq", allocationSize = 1)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator = "client_seq")
+//    private Long id;
 
     @JoinColumn(name = "position_id", referencedColumnName = "id")
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
@@ -39,9 +38,11 @@ public class Client extends User implements Serializable {
     private Double rate;
 
     @Column(name = "is_in_trip", columnDefinition = "boolean default false")
-    @SerializedName("is_in_trip")
     private boolean isInTrip;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade=CascadeType.ALL)
+//    @ElementCollection
+//    @CollectionTable(name = "transport", joinColumns = @JoinColumn(name = "owner_id"))
+//    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OneToMany(mappedBy = "owner")
     private List<Transport> transports;
 }

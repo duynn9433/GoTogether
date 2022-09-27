@@ -2,10 +2,8 @@ package duynn.gotogether.entity;
 
 import com.google.gson.annotations.SerializedName;
 import duynn.gotogether.util.enumClass.TransportType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import duynn.gotogether.util.enumClass.TransportTypeConverter;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -14,7 +12,9 @@ import java.io.Serializable;
 
 
 @Entity
-@Data
+@Embeddable
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,13 +41,14 @@ public class Transport implements Serializable {
     private String image;
 
     @Column(name = "transport_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @SerializedName("transport_type")
+//    @Enumerated(EnumType.STRING)
+    @Convert(converter = TransportTypeConverter.class)
     private TransportType transportType;
 
-//    @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @SerializedName("owner")
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Client owner;
+
 
 }

@@ -1,5 +1,6 @@
 package duynn.gotogether.service;
 
+import com.google.gson.Gson;
 import duynn.gotogether.entity.*;
 import duynn.gotogether.util.enumClass.TransportType;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +21,8 @@ class TripServiceImplTest {
     @Autowired
     TripServiceImpl tripService;
 
+    @Autowired
+    Gson gson;
     Trip trip;
     Client clientData;
     @BeforeEach
@@ -87,16 +91,19 @@ class TripServiceImplTest {
     @Test
     @Transactional
     @Rollback
-    void findAll() {
+    void findAll() throws Exception {
+//        List<Trip> trips = tripService.findAll();
+//        String json = gson.toJson(trips);
+//        System.out.println(json);
     }
 
     @Test
     @Transactional
     @Rollback
     void findById() throws Exception {
-        Trip expected = tripService.create(trip);
-        Trip actual = tripService.findById(expected.getId());
-        assertEquals(expected, actual);
+//        Trip expected = tripService.create(trip);
+//        Trip actual = tripService.findById(expected.getId());
+//        assertEquals(expected, actual);
     }
 
     @Test
