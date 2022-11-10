@@ -13,7 +13,14 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: true
-#  mvc:
+
+  jackson:
+#    serialization:
+#      write_dates_as_timestamps: false
+    deserialization:
+      ADJUST_DATES_TO_CONTEXT_TIME_ZONE: false
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: UTC
 #    converters:
 #      preferred-json-mapper: gson
 #    database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -29,8 +36,9 @@ logging:
               BasicBinder: TRACE
 
 
-#jwt:
-#  secret: NguyenNgocDuy
+jwt:
+  secret: NguyenNgocDuy
 
 server:
   port: 8888
+

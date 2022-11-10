@@ -14,7 +14,7 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO implements Serializable {
+public class UserForRegisDTO implements Serializable {
     private static final long serialVersionUID = 4L;
 
     private Long id;
@@ -25,7 +25,7 @@ public class UserDTO implements Serializable {
 
     private String description;
 
-    private AccountWithoutPasswordDTO account;
+    private AccountDTO account;
 
     private FullnameDTO fullname;
 

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 @Data
@@ -18,19 +19,14 @@ public class ClientTripDTO implements Serializable {
 
     private Long id;
 
-
-    private PositionDTO pickUpPosition;
-
     @JsonProperty("pickup_place")
     private PlaceDTO pickUpPlace;
 
-    private PositionDTO dropOffPosition;
-
     @JsonProperty("dropoff_place")
-    private PlaceDTO dropOffplace;
+    private PlaceDTO dropOffPlace;
 
     @JsonProperty("pickup_time")
-    private Date pickUpTime;
+    private Calendar pickUpTime;
 
     @JsonProperty("number_of_people")
     private Integer numOfPeople;

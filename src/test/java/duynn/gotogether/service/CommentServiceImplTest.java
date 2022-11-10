@@ -55,10 +55,6 @@ class CommentServiceImplTest {
                         .province("province")
                         .detail("detail")
                         .build())
-                .position(Position.builder()
-                        .latitude(10.0)
-                        .longitude(10.0)
-                        .build())
                 .rate(10.0)
                 .isInTrip(false)
                 .build();

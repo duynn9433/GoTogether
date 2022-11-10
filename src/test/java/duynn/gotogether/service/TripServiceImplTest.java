@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ class TripServiceImplTest {
     @BeforeEach
     void setUp() {
         clientData = Client.builder()
+                .id(1L)
                 .avatar("avatar")
                 .description("description")
                 .role("role")
@@ -50,29 +52,18 @@ class TripServiceImplTest {
                         .province("province")
                         .detail("detail")
                         .build())
-                .position(Position.builder()
-                        .latitude(10.0)
-                        .longitude(10.0)
-                        .build())
                 .rate(10.0)
                 .isInTrip(false)
                 .build();
         trip = Trip.builder()
-                .startPosition(Position.builder()
-                        .latitude(10.0)
-                        .longitude(10.0)
-                        .build())
-                .endPosition(Position.builder()
-                        .latitude(20.0)
-                        .longitude(20.0)
-                        .build())
-                .startTime(new Date())
+                .startTime(Calendar.getInstance())
                 .totalSeat(10)
                 .emptySeat(5)
                 .pricePerKm(100.0)
                 .description("description")
                 .distancePlus(10.0)
                 .transport(Transport.builder()
+                        .id(1L)
                         .name("name")
                         .licensePlate("licensePlate")
                         .image("image")
@@ -80,7 +71,7 @@ class TripServiceImplTest {
                         .transportType(TransportType.CAR)
                         .owner(clientData)
                         .build())
-                .Driver(clientData)
+                .driver(clientData)
                 .isFinished(false)
                 .isCanceled(false)
                 .isStarted(false)

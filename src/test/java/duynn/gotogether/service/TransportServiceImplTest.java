@@ -47,10 +47,6 @@ class TransportServiceImplTest {
                         .province("province")
                         .detail("detail")
                         .build())
-                .position(Position.builder()
-                        .latitude(10.0)
-                        .longitude(10.0)
-                        .build())
                 .rate(10.0)
                 .isInTrip(false)
                 .build();
@@ -118,6 +114,16 @@ class TransportServiceImplTest {
             assertNull(actual);
         }catch (Exception e){
             assertEquals(e.getMessage(), "Không tìm thấy dữ liệu phương tiện");
+        }
+    }
+
+    @Test
+    void getTransportByUserId() {
+        List<Transport> actual = transportService.getTransportByUserId(1L);
+        assertNotNull(actual);
+        System.out.println(actual);
+        for (Transport transport : actual) {
+            System.out.println(transport);
         }
     }
 }

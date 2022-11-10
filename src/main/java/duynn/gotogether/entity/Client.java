@@ -1,10 +1,11 @@
 package duynn.gotogether.entity;
 
-import com.google.gson.annotations.SerializedName;
 import duynn.gotogether.entity.place.Location;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,9 +28,6 @@ public class Client extends User implements Serializable {
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator = "client_seq")
 //    private Long id;
 
-    @JoinColumn(name = "position_id", referencedColumnName = "id")
-    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    private Position position;
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     private Location location;
@@ -45,4 +43,16 @@ public class Client extends User implements Serializable {
 //    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @OneToMany(mappedBy = "owner")
     private List<Transport> transports;
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + getId() + ", " +
+                "rate = " + getRate() + ", " +
+                "isInTrip = " + isInTrip() + ", " +
+                "role = " + getRole() + ", " +
+                "avatar = " + getAvatar() + ", " +
+                "description = " + getDescription() + ", " +
+                "isActive = " + isActive() + ")";
+    }
 }

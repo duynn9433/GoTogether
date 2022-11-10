@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,26 +26,23 @@ public class Trip implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator = "trip_seq")
     private Long id;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "start_position_id", referencedColumnName = "id")
-//    private Position startPosition;
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "start_place_id", referencedColumnName = "id")
     private Place startPlace;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "end_position_id", referencedColumnName = "id")
-//    private Position endPosition;
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "end_place_id", referencedColumnName = "id")
     private Place endPlace;
 
-    @ElementCollection
-    @CollectionTable(name = "stop_place", joinColumns = @JoinColumn(name = "trip_id"))
+//    @ElementCollection()
+//    @CollectionTable(name = "stop_place", joinColumns = @JoinColumn(name = "trip_id"))
+//    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Place> listStopPlace;
 
     @Column(name = "start_time")
-    private Date startTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Calendar startTime;
 
     @Column(name = "total_seat", nullable = false)
     private Integer totalSeat;

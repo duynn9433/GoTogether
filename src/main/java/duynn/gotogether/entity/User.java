@@ -36,7 +36,7 @@ public class User implements Serializable {
     private String description;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false, referencedColumnName = "id")
     private Account account;
 

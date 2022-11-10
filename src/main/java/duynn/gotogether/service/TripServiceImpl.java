@@ -2,6 +2,7 @@ package duynn.gotogether.service;
 
 import duynn.gotogether.dto.TripDTO;
 import duynn.gotogether.entity.*;
+import duynn.gotogether.entity.place.Location;
 import duynn.gotogether.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.time.DateUtils;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -22,23 +25,6 @@ public class TripServiceImpl implements GeneralService<Trip> {
     ClientTripRepository clientTripRepository;
     @Autowired
     ClientRepository clientRepository;
-
-    @Autowired
-    ModelMapper modelMapper;
-
-    public List<TripDTO> findAllDTO() throws Exception {
-        List<Trip> trips = tripRepository.findAll();
-
-        List<TripDTO> tripDTOS = new ArrayList<>();
-        for (Trip trip : trips) {
-            tripDTOS.add(modelMapper.map(trip, TripDTO.class));
-        }
-        if (trips.isEmpty()) {
-            throw new Exception("Không tìm thấy trip");
-        }
-
-        return tripDTOS;
-    }
 
     @Override
     public List<Trip> findAll() throws Exception {
@@ -60,20 +46,7 @@ public class TripServiceImpl implements GeneralService<Trip> {
             throw new Exception("Không tìm thấy trip");
         }
     }
-    public TripDTO findByIdDTO(Long id) throws Exception {
-        Optional<Trip> trip = tripRepository.findById(id);
-        if (trip.isPresent()) {
-            return modelMapper.map(trip.get(), TripDTO.class);
-        } else {
-            throw new Exception("Không tìm thấy trip");
-        }
-    }
 
-
-    public TripDTO createDTO(Trip trip) throws Exception {
-        Trip responseTrip = tripRepository.save(trip);
-        return modelMapper.map(responseTrip, TripDTO.class);
-    }
     @Override
     public Trip create(Trip trip) throws Exception {
         Trip responseTrip = tripRepository.save(trip);
@@ -85,13 +58,45 @@ public class TripServiceImpl implements GeneralService<Trip> {
         Trip responseTrip = tripRepository.save(trip);
         return responseTrip;
     }
-    public TripDTO updateDTO(Trip trip) throws Exception {
-        Trip responseTrip = tripRepository.save(trip);
-        return modelMapper.map(responseTrip, TripDTO.class);
-    }
 
     @Override
     public int delete(Long id) {
         return tripRepository.deleteTripById(id);
+    }
+
+    public List<Trip> getTripByLocation(Location location) throws Exception {
+        List<Trip> trips = tripRepository.getTripByLocation(location.getLat(), location.getLng());
+        if(trips.isEmpty()){
+            throw new Exception("Không tìm thấy chuyến đi phù hợp");
+        }
+        return trips;
+    }
+
+    public List<Trip> getTripByStartEndLocation(Location startLocation, Location endLocation) throws Exception {
+        List<Trip> trips = tripRepository.getTripByStartEndLocation(
+                startLocation.getLat(), startLocation.getLng(),
+                endLocation.getLat(), endLocation.getLng());
+        if(trips.isEmpty()){
+            throw new Exception("Không tìm thấy chuyến đi phù hợp");
+        }
+        return trips;
+    }
+
+    public List<Trip> searchTrip(Location startLocation,
+                                 Location endLocation,
+                                 Calendar startTime,
+                                 Integer numOfSeat) throws Exception {
+        List<Trip> trips = getTripByStartEndLocation(startLocation,endLocation);
+        List<Trip> result = new ArrayList<>();
+        for(Trip t : trips){
+            if(DateUtils.isSameDay(t.getStartTime(), startTime)
+                    && t.getEmptySeat() >= numOfSeat){
+                result.add(t);
+            }
+        }
+        if(result.isEmpty()){
+            throw new Exception("Không tìm thấy chuyến đi phù hợp");
+        }
+        return result;
     }
 }

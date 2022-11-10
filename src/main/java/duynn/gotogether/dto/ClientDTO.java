@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientDTO extends UserDTO implements Serializable {
     private static final long serialVersionUID = 5L;
-    private PositionDTO position;
     private LocationDTO location;
 
     private Double rate;
@@ -24,12 +23,11 @@ public class ClientDTO extends UserDTO implements Serializable {
     private boolean isInTrip;
 
 //    @JsonManagedReference
-    private List<TransportDTO> transports;
+    private List<TransportWithoutOwnerDTO> transports;
 
     @Override
     public String toString() {
         String s = super.toString() + "ClientDTO{" +
-                "position=" + position +
                 ", location=" + location +
                 ", rate=" + rate +
                 ", isInTrip=" + isInTrip +

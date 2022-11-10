@@ -1,16 +1,15 @@
 package duynn.gotogether.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.io.Serializable;
-
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Status implements Serializable {
-    public static final long serialVersionUID = 1L;
+public class RegisterRes {
     private String status;
     private String message;
 }

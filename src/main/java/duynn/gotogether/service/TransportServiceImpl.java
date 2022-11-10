@@ -50,4 +50,8 @@ public class TransportServiceImpl implements GeneralService<Transport> {
     public int delete(Long id) {
         return transportRepository.deleteTransportById(id);
     }
+
+    public List<Transport> getTransportByUserId(Long id) {
+        return transportRepository.getTransportByOwnerId(id);
+    }
 }

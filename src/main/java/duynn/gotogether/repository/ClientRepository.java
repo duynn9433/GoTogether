@@ -1,6 +1,7 @@
 package duynn.gotogether.repository;
 
 import duynn.gotogether.entity.Client;
+import duynn.gotogether.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,5 +16,5 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Modifying
     @Query(value = "UPDATE user u, client c SET u.is_active = 0 WHERE u.id = c.id AND c.id = ?1",nativeQuery = true)
     int deleteClient(Long Id);
-
+    Optional<Client> findClientByAccount_Username(String username);
 }

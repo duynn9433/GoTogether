@@ -3,12 +3,18 @@ package duynn.gotogether.dto;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
+import com.fasterxml.jackson.databind.ser.std.CalendarSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +40,9 @@ public class TripDTO implements Serializable {
     private List<PlaceDTO> listStopPlace;
 
     @JsonProperty("start_time")
-    private Date startTime;
+    @JsonSerialize(using = CalendarSerializer.class)
+    @JsonDeserialize(using = DateDeserializers.CalendarDeserializer.class)
+    private Calendar startTime;
 
     @JsonProperty("total_seat")
     private Integer totalSeat;
@@ -52,7 +60,7 @@ public class TripDTO implements Serializable {
     private Double distancePlus;
 
     @JsonProperty("transport")
-    private TransportDTO transport;
+    private TransportWithoutOwnerDTO transport;
 
     @JsonProperty("is_finished")
     private boolean isFinished;

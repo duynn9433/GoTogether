@@ -12,12 +12,13 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountDTO implements Serializable {
+public class AccountWithoutPasswordDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
 
     private String username;
 
+    @JsonIgnore
     private String password;
 }
