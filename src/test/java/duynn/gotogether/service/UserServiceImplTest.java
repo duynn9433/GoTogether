@@ -1,108 +1,69 @@
 package duynn.gotogether.service;
 
 import duynn.gotogether.entity.*;
-import org.junit.jupiter.api.BeforeEach;
+import duynn.gotogether.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
-
 class UserServiceImplTest {
 
     @Autowired
     UserServiceImpl userService;
-
-    User userData;
-
-    @BeforeEach
-    void setUp() {
-        userData = User.builder()
-                .account(Account.builder()
-                        .username("duynn")
-                        .password("123456")
-                        .build())
-                .address(Address.builder()
-                        .city("HN")
-                        .district("1")
-                        .province("1")
-                        .detail("1")
-                        .build())
-                .fullname(Fullname.builder()
-                        .firstName("duynn")
-                        .middleName("duynn")
-                        .lastName("duynn")
-                        .build())
-                .contactInfomation(ContactInfomation.builder()
-                        .email("duynn@mail.com")
-                        .phoneNumber("123456789")
-                        .build())
-                .role("USER")
-                .description("duynn")
-                .isActive(true)
-                .avatar("avatar")
-                .build();
-
-    }
+    @MockBean(name = "userRepository")
+    UserRepository userRepository;
 
     @Test
     @Transactional
     @Rollback
-    void findAll() throws Exception {
-        User expected = userService.create(userData);
-        List<User> actual = userService.findAll();
-        assertNotNull(actual);
+    void testCreate() throws Exception {
+        // Setup
+        final User user = new User(0L, "role", "avatar", "description", new Account(0L, "username", "password"),
+                new Fullname(0L, "firstName", "lastName", "middleName", "nickName"),
+                new ContactInfomation(0L, "phoneNumber", "email"),
+                new Address(0L, "city", "district", "province", "detail"), false);
+        final User expectedResult = new User(0L, "role", "avatar", "description",
+                new Account(0L, "username", "password"),
+                new Fullname(0L, "firstName", "lastName", "middleName", "nickName"),
+                new ContactInfomation(0L, "phoneNumber", "email"),
+                new Address(0L, "city", "district", "province", "detail"), false);
+        when(userRepository.save(user)).thenReturn(expectedResult);
+        // Run the test
+        final User result = userService.create(user);
+
+        // Verify the results
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    void findById() throws Exception {
-        User expected = userService.create(userData);
-        User actual = userService.findById(expected.getId());
-        assertEquals(expected, actual);
+    void testFindById() throws Exception {
+        // Setup
+        final User expectedResult = new User(0L, "role", "avatar", "description",
+                new Account(0L, "username", "password"),
+                new Fullname(0L, "firstName", "lastName", "middleName", "nickName"),
+                new ContactInfomation(0L, "phoneNumber", "email"),
+                new Address(0L, "city", "district", "province", "detail"), false);
+        when(userRepository.findByIdAndIsActiveIsTrue(0L)).thenReturn(java.util.Optional.of(expectedResult));
+        // Run the test
+        final User result = userService.findById(0L);
+
+        // Verify the results
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    void create() throws Exception {
-        User expected = userService.create(userData);
-        assertEquals(expected, userData);
-        System.out.println(userData);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void update() throws Exception {
-        User expected = userService.create(userData);
-        expected.setAvatar("avatar2");
-        userService.update(expected);
-        User actual = userService.findById(expected.getId());
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void delete() throws Exception {
-        User expected = userService.create(userData);
-        User actual = userService.findById(expected.getId());
-        assertEquals(expected, actual);
-
-        userService.delete(expected.getId());
-        try{
-            actual = userService.findById(expected.getId());
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Không tìm thấy dữ liệu");
-        }
+    void testFindById_ThrowsException() throws Exception {
+        when(userRepository.findByIdAndIsActiveIsTrue(0L)).thenReturn(java.util.Optional.empty());
+        // Setup
+        // Run the test
+        assertThatThrownBy(() -> userService.findById(0L)).isInstanceOf(Exception.class);
     }
 }

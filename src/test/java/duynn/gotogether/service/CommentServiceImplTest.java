@@ -1,118 +1,63 @@
 package duynn.gotogether.service;
 
-import duynn.gotogether.entity.*;
-import org.junit.jupiter.api.BeforeEach;
+import duynn.gotogether.entity.Comment;
+import duynn.gotogether.repository.CommentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class CommentServiceImplTest {
 
     @Autowired
     CommentServiceImpl commentService;
-    @Autowired
-    ClientServiceImpl clientService;
-
-    Comment comment;
-    Client clientData;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        comment = Comment.builder()
-                .content("content")
-                .Author(Client.builder().id(1L).build())
-                .Receiver(Client.builder().id(1L).build())
-                .rating(1)
-                .trip(Trip.builder().id(1L).build())
-                .build();
-        clientData = Client.builder()
-                .avatar("avatar")
-                .description("description")
-                .role("role")
-                .isActive(true)
-                .account(Account.builder()
-                        .username("duynn")
-                        .password("password")
-                        .build())
-                .contactInfomation(ContactInfomation.builder()
-                        .email("duynn@mail.com")
-                        .phoneNumber("0966215413")
-                        .build())
-                .fullname(Fullname.builder()
-                        .firstName("duy")
-                        .lastName("nn")
-                        .build())
-                .address(Address.builder()
-                        .city("HCM")
-                        .district("Q1")
-                        .province("province")
-                        .detail("detail")
-                        .build())
-                .rate(10.0)
-                .isInTrip(false)
-                .build();
-        clientService.create(clientData);
-        clientData.getAccount().setUsername("duynn2");
-        clientService.create(clientData);
-    }
+    @MockBean(name = "commentRepository")
+    CommentRepository commentRepository;
 
     @Test
     @Transactional
     @Rollback
-    void findAll() throws Exception {
-        commentService.create(comment);
-        List<Comment> comments = commentService.findAll();
-        assertNotNull(comments);
+    void testCreate() throws Exception {
+        // Setup
+        final Comment comment = Comment.builder().build();
+        final Comment expectedResult = Comment.builder().build();
+        when(commentRepository.save(Comment.builder().build())).thenReturn(Comment.builder().build());
+
+        // Run the test
+        final Comment result = commentService.create(comment);
+
+        // Verify the results
+        assertThat(result).isEqualTo(expectedResult);
+    }
+    @Test
+    void testGetCommentsByDriverId() throws Exception {
+        // Setup
+        final List<Comment> expectedResult = List.of(Comment.builder().build());
+        when(commentRepository.findCommentByDriverId(0L)).thenReturn(List.of(Comment.builder().build()));
+
+        // Run the test
+        final List<Comment> result = commentService.getCommentsByDriverId(0L);
+
+        // Verify the results
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    void findById() throws Exception {
-        Comment expected =commentService.create(comment);
-        assertNotNull(expected);
-        Comment actual = commentService.findById(expected.getId());
-        assertEquals(expected, actual);
-    }
+    void testGetCommentsByDriverId_ThrowsException() {
+        // Setup
+        when(commentRepository.findCommentByDriverId(0L)).thenReturn(new ArrayList<>());
 
-    @Test
-    @Transactional
-    @Rollback
-    void create() throws Exception {
-        Comment expected =commentService.create(comment);
-        Comment actual = commentService.findById(expected.getId());
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void update() throws Exception {
-        Comment expected =commentService.create(comment);
-        Comment actual = commentService.findById(expected.getId());
-        assertEquals(expected, actual);
-        expected.setContent("new content");
-        commentService.update(expected);
-        actual = commentService.findById(expected.getId());
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void delete() throws Exception {
-        Comment expected =commentService.create(comment);
-        Comment actual = commentService.findById(expected.getId());
-        assertEquals(expected, actual);
-        commentService.delete(expected.getId());
-        actual = commentService.findById(expected.getId());
-        assertNull(actual);
+        // Run the test
+        assertThatThrownBy(() -> commentService.getCommentsByDriverId(0L)).isInstanceOf(Exception.class);
     }
 }

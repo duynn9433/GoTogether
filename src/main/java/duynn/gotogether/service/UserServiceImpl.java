@@ -11,48 +11,18 @@ import java.util.Optional;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class UserServiceImpl implements GeneralService<User> {
-
+public class UserServiceImpl{
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    AccountRepository accountRepository;
-    @Autowired
-    AddressRepository addressRepository;
-    @Autowired
-    FullnameRepository fullnameRepository;
-    @Autowired
-    PositionRepository positionRepository;
-
-    @Override
-    public List<User> findAll() throws Exception {
-        List<User> users = userRepository.findByIsActiveIsTrue();
-        return users;
-    }
-
-    @Override
     public User findById(Long id) throws Exception {
         Optional<User> user = userRepository.findByIdAndIsActiveIsTrue(id);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new Exception("Không tìm thấy dữ liệu");
         }
         return user.get();
     }
-
-    @Override
-    public User create(User user) throws Exception {
+    public User create(User user){
         user.setActive(true);
         return userRepository.save(user);
-    }
-
-    @Override
-    public User update(User user) throws Exception {
-        user.setActive(true);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public int delete(Long id) {
-        return userRepository.deleteUserById(id);
     }
 }

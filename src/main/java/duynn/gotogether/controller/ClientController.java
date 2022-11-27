@@ -1,17 +1,14 @@
 package duynn.gotogether.controller;
 
-import duynn.gotogether.dto.ClientDTO;
+import duynn.gotogether.dto.entity_dto.ClientDTO;
 import duynn.gotogether.entity.Client;
 import duynn.gotogether.service.ClientServiceImpl;
-import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1/client")

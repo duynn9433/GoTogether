@@ -3,6 +3,8 @@ package duynn.gotogether.service;
 import duynn.gotogether.entity.Account;
 import duynn.gotogether.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,13 +15,8 @@ import java.util.Optional;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class AccountServiceImpl implements GeneralService<Account> {
-
     @Autowired
     AccountRepository accountRepository;
-
-    public Account findAccountByUsername(String username) {
-        return accountRepository.findAccountByUsername(username);
-    }
 
     public boolean isExist(String username) {
         return accountRepository.findAccountByUsername(username) != null;
@@ -48,20 +45,23 @@ public class AccountServiceImpl implements GeneralService<Account> {
         if(isExist(account.getUsername())) {
             throw new Exception("Username đã tồn tại");
         }
-        accountRepository.save(account);
-        return null;
+        Account res = accountRepository.save(account);
+        return res;
     }
 
     @Override
     public Account update(Account account) throws Exception {
-        accountRepository.save(account);
-        return null;
+        Account account1 = accountRepository.save(account);
+        if (account1 == null) {
+            throw new Exception("Không thể cập nhật dữ liệu");
+        }
+        return account1;
     }
 
     @Override
     public int delete(Long id) {
-        accountRepository.deleteAccountById(id);
-        return 0;
+        int res = accountRepository.deleteAccountById(id);
+        return res;
     }
 
     public boolean login(Account data) {

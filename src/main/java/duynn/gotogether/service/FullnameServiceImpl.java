@@ -11,41 +11,20 @@ import java.util.Optional;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class FullnameServiceImpl implements GeneralService<Fullname> {
+public class FullnameServiceImpl{
 
     @Autowired
     FullnameRepository fullnameRepository;
 
-    @Override
-    public List<Fullname> findAll() throws Exception {
-        List<Fullname> fullnames = fullnameRepository.findAll();
-        if(fullnames.isEmpty()) {
-            throw new Exception("Không tìm thấy dữ liệu");
-        }
-        return fullnames;
-    }
-
-    @Override
     public Fullname findById(Long id) throws Exception {
         Optional<Fullname> fullname = fullnameRepository.findById(id);
-        if(!fullname.isPresent()) {
+        if(fullname.isEmpty()) {
             throw new Exception("Không tìm thấy dữ liệu");
         }
         return fullname.get();
     }
 
-    @Override
-    public Fullname create(Fullname fullname) throws Exception {
+    public Fullname create(Fullname fullname) {
         return fullnameRepository.save(fullname);
-    }
-
-    @Override
-    public Fullname update(Fullname fullname) throws Exception {
-        return fullnameRepository.save(fullname);
-    }
-
-    @Override
-    public int delete(Long id) {
-        return fullnameRepository.deleteFullnameById(id);
     }
 }

@@ -8,23 +8,25 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class TestMain {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int count = 1;
-        while(true){
-            String s = scanner.nextLine();
-            if(s.equals("exit")){
-                break;
-            }
-            if(s.length() == 0){
-                continue;
-            }
-            System.out.println("Question " + count + ": " + s + "\n" + "A: Simple sentence\n" +
-                    "B: Compound sentence\n" +
-                    "C: Complex sentence\n" +
-                    "D: Compound-complex sentence\n\n");
-            count++;
+    static class Test extends Thread  {
+        StringBuilder sbr;
+
+        public Test() {
+            sbr = new StringBuilder();
         }
 
+        public String hello() {
+            sbr.append("Hello World");
+            return(sbr.toString());
+        }
     }
+
+        public static void main(String args[]) {
+            Test thread1 = new Test();
+            thread1.start();
+            Test thread2 = new Test();
+            thread2.start();
+            System.out.println(thread1.hello());
+            System.out.println(thread2.hello());
+        }
 }

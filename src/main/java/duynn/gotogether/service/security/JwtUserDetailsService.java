@@ -1,6 +1,6 @@
 package duynn.gotogether.service.security;
 
-import duynn.gotogether.dto.UserDTO;
+import duynn.gotogether.dto.entity_dto.UserDTO;
 import duynn.gotogether.entity.Client;
 import duynn.gotogether.entity.place.Location;
 import duynn.gotogether.repository.ClientRepository;

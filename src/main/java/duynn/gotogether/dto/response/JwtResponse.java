@@ -1,8 +1,6 @@
 package duynn.gotogether.dto.response;
 
-import duynn.gotogether.dto.ClientDTO;
-import duynn.gotogether.dto.UserDTO;
-import duynn.gotogether.entity.User;
+import duynn.gotogether.dto.entity_dto.ClientDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

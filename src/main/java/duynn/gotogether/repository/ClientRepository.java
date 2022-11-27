@@ -17,4 +17,17 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Query(value = "UPDATE user u, client c SET u.is_active = 0 WHERE u.id = c.id AND c.id = ?1",nativeQuery = true)
     int deleteClient(Long Id);
     Optional<Client> findClientByAccount_Username(String username);
+
+    @Modifying
+    @Query(value = "UPDATE client c SET c.is_in_trip = ?2 WHERE c.id = ?1",nativeQuery = true)
+    int setIsInTripById(Long id, Boolean isInTrip);
+
+    @Query(value = "SELECT is_in_trip FROM go_together.client WHERE id = ?1;",nativeQuery = true)
+    Optional<Integer> checkClientIsInTrip(Long id);
+
+    Optional<Client> findClientByIdAndIsInTrip(Long id, Boolean isInTrip);
+
+    @Modifying
+    @Query(value = "UPDATE client c SET c.fcm_token = ?2 WHERE c.id = ?1",nativeQuery = true)
+    Integer updateFcmToken(Long clientId, String token);
 }

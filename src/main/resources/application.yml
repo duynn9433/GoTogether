@@ -4,6 +4,10 @@ spring:
     url: jdbc:mysql://localhost:3306/go_together
     username: root
     password: root
+    tomcat:
+      max-active: 20000
+    hikari:
+      maximum-pool-size: 20000
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,6 +17,10 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: true
+#  cache:
+#    jcache:
+#      config: ehcache.xml
+
 
   jackson:
 #    serialization:
@@ -42,3 +50,5 @@ jwt:
 server:
   port: 8888
 
+app:
+  firebase-configuration-file: gotogether-ebbee-firebase-adminsdk-9thii-da644f428a.json

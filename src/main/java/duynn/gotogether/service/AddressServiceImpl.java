@@ -28,19 +28,19 @@ public class AddressServiceImpl implements GeneralService<Address> {
     @Override
     public Address findById(Long id) throws Exception {
         Optional<Address> address = addressRepository.findById(id);
-        if(!address.isPresent()) {
+        if(address.isEmpty()) {
             throw new Exception("Không tìm thấy dữ liệu");
         }
         return address.get();
     }
 
     @Override
-    public Address create(Address address) throws Exception {
+    public Address create(Address address) {
         return addressRepository.save(address);
     }
 
     @Override
-    public Address update(Address address) throws Exception {
+    public Address update(Address address){
         return addressRepository.save(address);
     }
 

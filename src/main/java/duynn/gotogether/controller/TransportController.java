@@ -1,6 +1,6 @@
 package duynn.gotogether.controller;
 
-import duynn.gotogether.dto.TransportWithoutOwnerDTO;
+import duynn.gotogether.dto.entity_dto.TransportWithoutOwnerDTO;
 import duynn.gotogether.entity.Transport;
 import duynn.gotogether.service.TransportServiceImpl;
 import org.modelmapper.ModelMapper;
@@ -15,15 +15,12 @@ import java.util.List;
 //@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/v1/transport")
 public class TransportController {
-
     @Autowired
     TransportServiceImpl transportService;
-
     @Autowired
     ModelMapper modelMapper;
-
     @GetMapping("/get-by-user-id")
-    public ResponseEntity<?> getTransportByUserId(@RequestParam("id") Long id) {
+    public ResponseEntity<?> getTransportByUserId(@RequestParam("id") Long id) throws Exception {
         List<Transport> list = transportService.getTransportByUserId(id);
         List<TransportWithoutOwnerDTO> listDTO = new ArrayList<>();
         for (Transport transport : list) {

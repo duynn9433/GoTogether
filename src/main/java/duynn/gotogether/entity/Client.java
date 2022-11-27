@@ -38,21 +38,13 @@ public class Client extends User implements Serializable {
     @Column(name = "is_in_trip", columnDefinition = "boolean default false")
     private boolean isInTrip;
 
+    @Column(name = "fcm_token", columnDefinition = "string default ''")
+    private String fcmToken;
+
 //    @ElementCollection
 //    @CollectionTable(name = "transport", joinColumns = @JoinColumn(name = "owner_id"))
 //    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @OneToMany(mappedBy = "owner")
     private List<Transport> transports;
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + getId() + ", " +
-                "rate = " + getRate() + ", " +
-                "isInTrip = " + isInTrip() + ", " +
-                "role = " + getRole() + ", " +
-                "avatar = " + getAvatar() + ", " +
-                "description = " + getDescription() + ", " +
-                "isActive = " + isActive() + ")";
-    }
 }

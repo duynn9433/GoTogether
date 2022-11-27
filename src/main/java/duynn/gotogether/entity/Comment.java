@@ -30,16 +30,10 @@ public class Comment implements Serializable {
     private Integer rating;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
-    @SerializedName("author")
-    private Client Author;
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
+    private Client driver;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id", referencedColumnName = "id")
-    @SerializedName("receiver")
-    private Client Receiver;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trip_id", referencedColumnName = "id")
-    private Trip trip;
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    private ClientTrip clientTrip;
 }

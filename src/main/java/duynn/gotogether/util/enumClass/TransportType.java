@@ -1,12 +1,15 @@
 package duynn.gotogether.util.enumClass;
 
 public enum TransportType {
-    CAR ("Car"),
-    BUS ("Bus"),
-    BIKE ("Bike"),
-    WALKING ("Walking"),
-    OTHER ("Other"),
-    MOTORCYCLE ("Motorcycle");
+    CAR ("car"),
+    BIKE ("bike"),
+    TAXI ("taxi"),
+    TRUCK ("truck"),
+    BUS ("bus"),
+
+    WALKING ("walking"),
+    OTHER ("other"),
+    MOTORCYCLE ("motorcycle");
 
     private String code;
 

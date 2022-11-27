@@ -11,47 +11,25 @@ import java.util.Optional;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class TransportServiceImpl implements GeneralService<Transport> {
-
+public class TransportServiceImpl {
     @Autowired
     TransportRepository transportRepository;
-
-    @Override
-    public List<Transport> findAll() throws Exception {
-        List<Transport> transports = transportRepository.findAll();
-        if (transports.isEmpty()) {
-            throw new Exception("Không tìm thấy dữ liệu phương tiện");
-        }
-        return transports;
-    }
-
-    @Override
     public Transport findById(Long id) throws Exception {
         Optional<Transport> transport = transportRepository.findById(id);
-        if (!transport.isPresent()) {
+        if (transport.isEmpty()) {
             throw new Exception("Không tìm thấy dữ liệu phương tiện");
         }
         return transport.get();
     }
-
-    @Override
-    public Transport create(Transport transport) throws Exception {
+    public Transport create(Transport transport) {
         transportRepository.save(transport);
         return transport;
     }
-
-    @Override
-    public Transport update(Transport transport) throws Exception {
-        transportRepository.save(transport);
-        return transport;
-    }
-
-    @Override
-    public int delete(Long id) {
-        return transportRepository.deleteTransportById(id);
-    }
-
-    public List<Transport> getTransportByUserId(Long id) {
-        return transportRepository.getTransportByOwnerId(id);
+    public List<Transport> getTransportByUserId(Long id) throws Exception {
+        List<Transport> transports = transportRepository.getTransportByOwnerId(id);
+        if (transports.isEmpty()) {
+            throw new Exception("Không tìm thấy dữ liệu phương tiện");
+        }
+        return transports;
     }
 }

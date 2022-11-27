@@ -1,7 +1,7 @@
 package duynn.gotogether.controller;
 
-import duynn.gotogether.dto.ClientDTO;
-import duynn.gotogether.dto.UserDTO;
+import duynn.gotogether.dto.entity_dto.ClientDTO;
+import duynn.gotogether.dto.entity_dto.UserDTO;
 import duynn.gotogether.dto.request.JwtRequest;
 import duynn.gotogether.dto.response.JwtResponse;
 import duynn.gotogether.dto.response.RegisterRes;
@@ -87,7 +87,6 @@ public class JwtAuthenticationController {
             return ResponseEntity.badRequest().body(new RegisterRes("Fail", e.getMessage()));
         }
     }
-
 
     private void authenticate(String username, String password) throws Exception {
         try {

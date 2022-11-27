@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,16 +17,7 @@ public class ClientServiceImpl implements GeneralService<Client> {
     @Autowired
     ClientRepository clientRepository;
     @Autowired
-    AccountRepository accountRepository;
-    @Autowired
-    AddressRepository addressRepository;
-    @Autowired
-    FullnameRepository fullnameRepository;
-    @Autowired
-    PositionRepository positionRepository;
-    @Autowired
     TransportRepository transportRepository;
-
 
     @Override
     public List<Client> findAll() throws Exception {
@@ -39,19 +31,16 @@ public class ClientServiceImpl implements GeneralService<Client> {
     @Override
     public Client findById(Long id) throws Exception {
         Optional<Client> client = clientRepository.findByIdAndIsActiveIsTrue(id);
-        if (!client.isPresent()) {
+        if (client.isEmpty()) {
             throw new Exception("Không tìm thấy dữ liệu");
         }
         return client.get();
     }
 
     @Override
-    public Client create(Client client) throws Exception {
+    public Client create(Client client) {
         client.setActive(true);
         Client client1 = clientRepository.save(client);
-        if (client1 == null) {
-            throw new Exception("Không thể tạo mới dữ liệu");
-        }
         for(Transport transport : client.getTransports()){
             transport.getOwner().setId(client1.getId());
             transportRepository.save(transport);
@@ -60,13 +49,20 @@ public class ClientServiceImpl implements GeneralService<Client> {
     }
 
     @Override
-    public Client update(Client client) throws Exception {
+    public Client update(Client client) {
         client.setActive(true);
         return clientRepository.save(client);
     }
-
     @Override
     public int delete(Long id) {
         return clientRepository.deleteClient(id);
+    }
+
+    public Integer updateFcmToken(Long clientId, String token) {
+        int result = clientRepository.updateFcmToken(clientId, token);
+        if (result == 0) {
+            throw new RuntimeException("Không thể cập nhật token");
+        }
+        return result;
     }
 }

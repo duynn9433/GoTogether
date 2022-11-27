@@ -13,26 +13,11 @@ import java.util.Optional;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class ClientTripServiceImpl implements GeneralService<ClientTrip> {
+public class ClientTripServiceImpl{
 
     @Autowired
     ClientTripRepository clientTripRepository;
-    @Autowired
-    ClientRepository clientRepository;
-    @Autowired
-    TripRepository tripRepository;
 
-
-    @Override
-    public List<ClientTrip> findAll() throws Exception {
-        List<ClientTrip> clientTrips = clientTripRepository.findAll();
-        if(clientTrips.isEmpty()){
-            throw new Exception("Không tìm thấy clientTrip");
-        }
-        return clientTrips;
-    }
-
-    @Override
     public ClientTrip findById(Long id) throws Exception {
         Optional<ClientTrip> clientTrip = clientTripRepository.findById(id);
         if(clientTrip.isPresent()){
@@ -42,18 +27,38 @@ public class ClientTripServiceImpl implements GeneralService<ClientTrip> {
         }
     }
 
-    @Override
-    public ClientTrip create(ClientTrip clientTrip) throws Exception {
+    public ClientTrip create(ClientTrip clientTrip) {
         return clientTripRepository.save(clientTrip);
     }
 
-    @Override
-    public ClientTrip update(ClientTrip clientTrip) throws Exception {
+    public ClientTrip update(ClientTrip clientTrip){
         return clientTripRepository.save(clientTrip);
     }
 
-    @Override
     public int delete(Long id) {
         return clientTripRepository.deleteClientTripById(id);
+    }
+
+    @Transactional
+    public List<ClientTrip> getClientTripsByTripIdAndIsCanceledIsFalse(Long tripId) throws Exception {
+        List<ClientTrip> clientTrips = clientTripRepository.getClientTripsByTripIdAndIsCanceledIsFalse(tripId);
+        if(clientTrips.isEmpty()){
+            throw new Exception("Không tìm thấy clientTrip");
+        }
+        return clientTrips;
+    }
+
+    @Transactional
+    public List<ClientTrip> getAcceptClientTripsByTripId(Long tripId) throws Exception {
+        List<ClientTrip> clientTrips = clientTripRepository.getAcceptClientTripsByTripId(tripId);
+        if(clientTrips.isEmpty()){
+            throw new Exception("Không tìm thấy clientTrip");
+        }
+        return clientTrips;
+    }
+
+    public Integer passengerFinishTrip(ClientTrip clientTrip){
+        ClientTrip res = clientTripRepository.save(clientTrip);
+        return 1;
     }
 }

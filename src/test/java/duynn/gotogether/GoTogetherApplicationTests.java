@@ -1,6 +1,6 @@
 package duynn.gotogether;
 
-import duynn.gotogether.dto.TransportDTO;
+import duynn.gotogether.dto.entity_dto.TransportDTO;
 import duynn.gotogether.entity.Transport;
 import duynn.gotogether.util.enumClass.TransportType;
 import org.junit.jupiter.api.Test;

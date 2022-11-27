@@ -1,129 +1,105 @@
 package duynn.gotogether.service;
 
-import duynn.gotogether.entity.*;
+import duynn.gotogether.entity.Client;
+import duynn.gotogether.entity.Transport;
+import duynn.gotogether.entity.place.Location;
+import duynn.gotogether.repository.TransportRepository;
 import duynn.gotogether.util.enumClass.TransportType;
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class TransportServiceImplTest {
 
     @Autowired
     TransportServiceImpl transportService;
+    @MockBean(name = "transportRepository")
+    TransportRepository transportRepository;
 
-    Transport transportData;
-    Client clientData;
+    @Test
+    void testCreate() {
+        // Setup
+        final Transport transport = new Transport(0L, "name", "licensePlate", "description", "image", TransportType.CAR,
+                new Client(new Location(0L, 0.0, 0.0), 0.0, false, "fcmToken", List.of()));
 
-    @BeforeEach
-    void setUp() {
-        clientData = Client.builder()
-                .avatar("avatar")
-                .description("description")
-                .role("role")
-                .isActive(true)
-                .account(Account.builder()
-                        .username("duynn")
-                        .password("password")
-                        .build())
-                .contactInfomation(ContactInfomation.builder()
-                        .email("duynn@mail.com")
-                        .phoneNumber("0966215413")
-                        .build())
-                .fullname(Fullname.builder()
-                        .firstName("duy")
-                        .lastName("nn")
-                        .build())
-                .address(Address.builder()
-                        .city("HCM")
-                        .district("Q1")
-                        .province("province")
-                        .detail("detail")
-                        .build())
-                .rate(10.0)
-                .isInTrip(false)
-                .build();
-        transportData = Transport.builder()
-                .name("Truck")
-                .description("Truck description")
-                .licensePlate("ABC123")
-                .image("https://www.google.com/")
-                .transportType(TransportType.CAR)
-                .owner(clientData)
-                .build();
+        // Configure TransportRepository.save(...).
+        when(transportRepository.save(transport)).thenReturn(transport);
+
+        // Run the test
+        final Transport result = transportService.create(transport);
+
+        // Verify the results
+        verify(transportRepository).save(transport);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    void findAll() throws Exception {
-        Transport expected = transportService.create(transportData);
-        List<Transport> actual = transportService.findAll();
-        assertNotNull(actual);
+    void testFindById() throws Exception {
+        // Setup
+        // Configure TransportRepository.findById(...).
+        final Optional<Transport> transport = Optional.of(
+                new Transport(0L, "name", "licensePlate", "description", "image", TransportType.CAR,
+                        new Client(new Location(0L, 0.0, 0.0), 0.0, false, "fcmToken", List.of())));
+        when(transportRepository.findById(0L)).thenReturn(transport);
+
+        // Run the test
+        final Transport result = transportService.findById(0L);
+        // Verify the results
+        verify(transportRepository).findById(0L);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    void findById() throws Exception {
-        Transport expected = transportService.create(transportData);
-        Transport actual = transportService.findById(expected.getId());
-        assertEquals(expected, actual);
+    void testFindById_ThrowsException() {
+        // Setup
+        // Configure TransportRepository.findById(...).
+        final Optional<Transport> transport = Optional.of(
+                new Transport(0L, "name", "licensePlate", "description", "image", TransportType.CAR,
+                        new Client(new Location(0L, 0.0, 0.0), 0.0, false, "fcmToken", List.of())));
+        when(transportRepository.findById(0L)).thenReturn(Optional.empty());
+
+        // Run the test
+        assertThatThrownBy(() -> transportService.findById(0L)).isInstanceOf(Exception.class);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    void create() throws Exception {
-        Transport expected = transportService.create(transportData);
-        Transport actual = transportService.findById(expected.getId());
-        assertEquals(expected, actual);
+    void testGetTransportByUserId() throws Exception {
+        // Setup
+        // Configure TransportRepository.getTransportByOwnerId(...).
+        final List<Transport> list = List.of(
+                new Transport(0L, "name", "licensePlate", "description", "image", TransportType.CAR,
+                        new Client(new Location(0L, 0.0, 0.0), 0.0, false, "fcmToken", List.of())));
+        when(transportRepository.getTransportByOwnerId(0L)).thenReturn(list);
+
+        // Run the test
+        final List<Transport> result = transportService.getTransportByUserId(0L);
+
+        // Verify the results
+        verify(transportRepository).getTransportByOwnerId(0L);
+        assertThat(result).isEqualTo(list);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    void update() throws Exception {
-        Transport expected = transportService.create(transportData);
-        Transport actual = transportService.findById(expected.getId());
-        assertEquals(expected, actual);
-        expected.setName("Truck2");
-        transportService.update(expected);
-        actual = transportService.findById(expected.getId());
-        assertEquals(expected, actual);
-    }
+    void testGetTransportByUserId_ThrowsException() {
+        // Setup
+        // Configure TransportRepository.getTransportByOwnerId(...).
+        final List<Transport> list = List.of(
+                new Transport(0L, "name", "licensePlate", "description", "image", TransportType.CAR,
+                        new Client(new Location(0L, 0.0, 0.0), 0.0, false, "fcmToken", List.of())));
+        when(transportRepository.getTransportByOwnerId(0L)).thenReturn(new ArrayList<>());
 
-    @Test
-    @Transactional
-    @Rollback
-    void delete() throws Exception {
-        Transport expected = transportService.create(transportData);
-        Transport actual = transportService.findById(expected.getId());
-        assertEquals(expected, actual);
-        expected.setName("Truck2");
-        transportService.delete(expected.getId());
-        try{
-            actual = transportService.findById(expected.getId());
-            assertNull(actual);
-        }catch (Exception e){
-            assertEquals(e.getMessage(), "Không tìm thấy dữ liệu phương tiện");
-        }
-    }
-
-    @Test
-    void getTransportByUserId() {
-        List<Transport> actual = transportService.getTransportByUserId(1L);
-        assertNotNull(actual);
-        System.out.println(actual);
-        for (Transport transport : actual) {
-            System.out.println(transport);
-        }
+        // Run the test
+        assertThatThrownBy(() -> transportService.getTransportByUserId(0L)).isInstanceOf(Exception.class);
     }
 }

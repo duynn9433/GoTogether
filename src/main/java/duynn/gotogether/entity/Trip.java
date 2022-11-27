@@ -76,4 +76,7 @@ public class Trip implements Serializable {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Client driver;
 
+    @Column(name = "fcm_topic")
+    private String fcmTopic;
+
 }
