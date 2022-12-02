@@ -43,4 +43,7 @@ public class ClientTripDTO implements Serializable {
 
     private TripDTO trip;
 
+    @JsonProperty("distance")
+    private Double distance;
+
 }

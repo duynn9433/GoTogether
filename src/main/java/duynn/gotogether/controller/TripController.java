@@ -5,6 +5,7 @@ import duynn.gotogether.dto.entity_dto.ClientTripDTO;
 import duynn.gotogether.dto.entity_dto.TripDTO;
 import duynn.gotogether.dto.firebase.PushNotificationRequest;
 import duynn.gotogether.dto.request.SearchTripRequest;
+import duynn.gotogether.dto.response.AcceptedTripResponse;
 import duynn.gotogether.dto.response.Status;
 import duynn.gotogether.dto.start_trip_dto.StartTripResponse;
 import duynn.gotogether.dto.response.TripResponse;
@@ -13,7 +14,6 @@ import duynn.gotogether.entity.Client;
 import duynn.gotogether.entity.ClientTrip;
 import duynn.gotogether.entity.Comment;
 import duynn.gotogether.entity.Trip;
-import duynn.gotogether.repository.TripRepository;
 import duynn.gotogether.service.ClientServiceImpl;
 import duynn.gotogether.service.ClientTripServiceImpl;
 import duynn.gotogether.service.CommentServiceImpl;
@@ -104,12 +104,14 @@ public class TripController {
 
     @GetMapping("/get-accepted-trip/{id}")
     public ResponseEntity<?> getAcceptedTrip(@PathVariable("id") Long clientId) {
-        TripResponse response = new TripResponse();
+        AcceptedTripResponse response = new AcceptedTripResponse();
         try{
             Trip trip = tripService.getAcceptedTripNotFinished(clientId);
+            ClientTrip clientTrip = clientTripService.findByTripIdAndClientId(trip.getId(), clientId);
             response.setStatus(Constants.SUCCESS);
             response.setMessage("Get current trip successfully");
             response.setTrip(modelMapper.map(trip, TripDTO.class));
+            response.setClientTrip(modelMapper.map(clientTrip, ClientTripDTO.class));
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(Constants.FAIL);
@@ -131,7 +133,7 @@ public class TripController {
             response.setMessage("Get current trip successfully");
             response.setTrips(tripDTOS);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             response.setStatus(Constants.FAIL);
             response.setMessage(e.getMessage());
             return ResponseEntity.ok().body(response);
@@ -200,7 +202,7 @@ public class TripController {
     private void notifyToPassengerByTopic(Trip trip) throws FirebaseMessagingException {
         PushNotificationRequest pushNotificationRequest = PushNotificationRequest.builder()
                 .title("Thông báo")
-                .message("Chuyến đi " + trip.getId()+ " đã bắt đầu")
+                .message("Chuyến đi " + trip.getId() + " đã bắt đầu")
                 .topic(trip.getFcmTopic())
                 .build();
         fcmService.sendMessageToTopic(pushNotificationRequest);
@@ -217,6 +219,20 @@ public class TripController {
                 .message("Chuyến đi " + res.getId()+ " đã bắt đầu")
                 .build();
         pushNotificationService.sendPushNotiToMultipleToken(pushNotificationRequest,tokens);
+    }
+    private void notifyCancelToPassenger(Trip res) throws Exception {
+        List<ClientTrip> clientTrips = clientTripService.getAcceptClientTripsByTripId(res.getId());
+        List<String> tokens = new ArrayList<>();
+        for(ClientTrip clientTrip : clientTrips) {
+            tokens.add(clientTrip.getClient().getFcmToken());
+            clientTrip.getClient().setInTrip(false);
+            clientService.create(clientTrip.getClient());
+        }
+        PushNotificationRequest pushNotificationRequest = PushNotificationRequest.builder()
+                .title(Constants.TRIP_CANCEL)
+                .message("Chuyến đi " + res.getId()+ " đã bị huỷ")
+                .build();
+        pushNotificationService.sendCancelNotiToMultipleClientTrip(clientTrips, pushNotificationRequest, res.getId());
     }
 
 //    @PostMapping("/request-finish-passenger")
@@ -266,6 +282,35 @@ public class TripController {
             } else {
                 response.setStatus(Constants.FAIL);
                 response.setMessage("Finish trip failed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(Constants.FAIL);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.ok().body(response);
+        }
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/cancel/{id}")
+    public ResponseEntity<?> cancelTrip(@PathVariable("id") Long tripId) {
+        Status response = new Status();
+        try{
+            Trip res = tripService.findById(tripId);
+            if(res != null) {
+                response.setStatus(Constants.SUCCESS);
+                response.setMessage("Cancel trip successfully");
+                //trip cancel
+                res.setCanceled(true);
+                //driver not in trip
+                res.getDriver().setInTrip(false);
+                tripService.create(res);//update trip
+                //noti to passenger
+                notifyCancelToPassenger(res);
+            } else {
+                response.setStatus(Constants.FAIL);
+                response.setMessage("Cancel trip failed");
             }
         } catch (Exception e) {
             e.printStackTrace();

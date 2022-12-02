@@ -4,13 +4,16 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.TopicManagementResponse;
 import duynn.gotogether.dto.firebase.PushNotificationRequest;
+import duynn.gotogether.entity.ClientTrip;
+import duynn.gotogether.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PushNotificationService {
@@ -74,5 +77,27 @@ public class PushNotificationService {
     public TopicManagementResponse unSubcribeTopic(List<String> token, String topic) throws FirebaseMessagingException {
         TopicManagementResponse response = FirebaseMessaging.getInstance().unsubscribeFromTopic(token, topic);
         return response;
+    }
+
+    public void sendCancelNotiToMultipleClientTrip(List<ClientTrip> clientTrips,
+                                                   PushNotificationRequest pushNotificationRequest,
+                                                   Long id) {
+        Map<String, String> data = new HashMap<>();
+        data.put(Constants.CLIENT_TRIP_ID, String.valueOf(clientTrips.get(0).getId()));
+        data.put(Constants.PRICE, String.valueOf(0.0));
+        data.put(Constants.DISTANCE, String.valueOf(0.0));
+        data.put(Constants.PASSENGER_NUM, String.valueOf(0));
+        data.put(Constants.DRIVER_ID, String.valueOf(id));
+
+        try {
+            for (ClientTrip clientTrip : clientTrips) {
+                pushNotificationRequest.setToken(clientTrip.getClient().getFcmToken());
+                data.put(Constants.CLIENT_TRIP_ID, String.valueOf(clientTrip.getId()));
+                pushNotificationRequest.setData(data);
+                fcmService.sendMessageToToken(pushNotificationRequest);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 }

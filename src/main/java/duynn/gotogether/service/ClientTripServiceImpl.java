@@ -57,8 +57,13 @@ public class ClientTripServiceImpl{
         return clientTrips;
     }
 
+
     public Integer passengerFinishTrip(ClientTrip clientTrip){
         ClientTrip res = clientTripRepository.save(clientTrip);
         return 1;
+    }
+
+    public ClientTrip findByTripIdAndClientId(Long id, Long clientId) {
+        return clientTripRepository.findByTripIdAndClientId(id, clientId);
     }
 }

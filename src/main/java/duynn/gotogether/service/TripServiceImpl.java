@@ -117,6 +117,7 @@ public class TripServiceImpl {
         List<Trip> result = new ArrayList<>();
         for (Trip t : trips) {
             if (DateUtils.isSameDay(t.getStartTime(), startTime)
+                    && t.getStartTime().get(Calendar.HOUR_OF_DAY) <= startTime.get(Calendar.HOUR_OF_DAY)
                     && t.getEmptySeat() >= numOfSeat) {
                 result.add(t);
             }

@@ -57,4 +57,7 @@ public class ClientTrip implements Serializable {
     @JoinColumn(name = "trip_id", referencedColumnName = "id")
     private Trip trip;
 
+    @Column(name = "distance")
+    private Double distance;
+
 }

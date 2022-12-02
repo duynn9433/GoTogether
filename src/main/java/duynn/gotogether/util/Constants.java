@@ -54,5 +54,12 @@ public class Constants {
     public static final String PHONE_REGEX = "(84|0[3|5|7|8|9])+([0-9]{8})\\b";
 
 
+    public static final String TRIP_CANCEL = "TRIP_CANCEL";
+
+    public static final String CLIENT_TRIP_ID = "CLIENT_TRIP_ID";
+    public static final String DRIVER_ID = "DRIVER_ID";
+    public static final String DISTANCE = "DISTANCE";
+    public static final String PRICE = "PRICE";
+    public static final String PASSENGER_NUM = "PASSENGER_NUM";
 }
 

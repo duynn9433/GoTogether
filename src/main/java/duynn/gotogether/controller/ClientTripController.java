@@ -83,14 +83,17 @@ public class ClientTripController {
     }
 
     @PostMapping("/regit")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> regitTrip(@RequestBody ClientTripDTO clientTripDTO) {
 
         ClientTripResponse response = new ClientTripResponse();
         try {
-            System.out.println("DTO "+clientTripDTO);
             ClientTrip clientTrip = modelMapper.map(clientTripDTO, ClientTrip.class);
-            System.out.println("Entity "+clientTrip.toString());
+            ClientTrip test = clientTripService.findByTripIdAndClientId(
+                    clientTrip.getTrip().getId(), clientTrip.getClient().getId());
+            if(test != null) {
+                throw new Exception("Bạn đã đăng ký chuyến đi này rồi");
+            }
             //set price
             Trip trip = tripService.findById(clientTripDTO.getTrip().getId());
             clientTrip.setPricePerKmForOnePeople(trip.getPricePerKm());
@@ -102,7 +105,7 @@ public class ClientTripController {
             //save
             ClientTrip res = clientTripService.create(clientTrip);
             //notify driver
-            Client driver = res.getTrip().getDriver();
+            Client driver = trip.getDriver();
             PushNotificationRequest request = new PushNotificationRequest();
             request.setTitle("Thông báo");
             request.setMessage("Bạn có 1 yêu cầu tham gia chuyến đi mới");
@@ -113,7 +116,8 @@ public class ClientTripController {
             response.setData(modelMapper.map(res, ClientTripDTO.class));
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.setMessage(e.getMessage());
+            e.printStackTrace();
+            response.setMessage(e.getMessage()+"");
             response.setStatus(Constants.FAIL);
             return ResponseEntity.ok().body(response);
         }
@@ -179,6 +183,7 @@ public class ClientTripController {
             clientTrip.setAccepted(true);
             clientTrip.setCanceled(true);
             clientTrip.getClient().setInTrip(false);
+            clientTrip.setDistance(comment.getClientTrip().getDistance());
             clientTripService.update(clientTrip);
 //            Client client = clientTrip.getClient();
 //            client.setInTrip(false);
@@ -194,4 +199,22 @@ public class ClientTripController {
         }
     }
 
+    @PostMapping("/cancel/{tripId}/{clientId}")
+    public ResponseEntity<?> passengerCancelTrip(@PathVariable("tripId") Long tripId,
+                                                 @PathVariable("clientId") Long clientId) {
+        Status response = new Status();
+        try {
+            ClientTrip clientTrip = clientTripService.findByTripIdAndClientId(tripId, clientId);
+            clientTrip.setCanceled(true);
+            clientTrip.setAccepted(false);
+            clientTrip.getClient().setInTrip(false);
+            clientTripService.update(clientTrip);
+            Status status = new Status(Constants.SUCCESS, "Thành công");
+            return ResponseEntity.ok().body(status);
+        } catch (Exception e) {
+            response.setMessage(e.getMessage());
+            response.setStatus(Constants.FAIL);
+            return ResponseEntity.ok().body(response);
+        }
+    }
 }

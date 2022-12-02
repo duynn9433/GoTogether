@@ -5,8 +5,12 @@ import duynn.gotogether.entity.Client;
 import duynn.gotogether.entity.place.Location;
 import duynn.gotogether.repository.ClientRepository;
 import duynn.gotogether.repository.UserRepository;
+import org.hibernate.annotations.Cache;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,6 +45,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 //    private PasswordEncoder bcryptEncoder;
 
     @Override
+    @Cacheable(value = "user", key = "#s")
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Optional<duynn.gotogether.entity.User> user = userRepository.findUserByAccount_Username(s);
         if (user.isPresent()) {
@@ -66,6 +71,7 @@ public class JwtUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
     }
+    @CachePut(value = "user", key = "#username")
     public boolean save(UserDTO user) {
         System.out.println(user.toString());
         Client client = new Client();

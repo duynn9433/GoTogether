@@ -1,6 +1,7 @@
 package duynn.gotogether.dto.client_trip_dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import duynn.gotogether.dto.entity_dto.PlaceDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,5 +41,8 @@ public class ClientTripDTO implements Serializable {
     private ClientDTO client;
 
     private TripDTO trip;
+
+    @JsonProperty("distance")
+    private Double distance;
 
 }

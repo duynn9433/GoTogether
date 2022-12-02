@@ -1,9 +1,6 @@
 package duynn.gotogether.service.firebase;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import duynn.gotogether.dto.firebase.PnsRequest;
 import duynn.gotogether.dto.firebase.PushNotificationRequest;
 import org.springframework.stereotype.Service;
@@ -12,10 +9,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.firebase.messaging.AndroidConfig;
-import com.google.firebase.messaging.AndroidNotification;
-import com.google.firebase.messaging.ApnsConfig;
-import com.google.firebase.messaging.Aps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 @Service
@@ -44,6 +37,9 @@ public class FCMService {
                 .setAps(Aps.builder().setCategory(topic).setThreadId(topic).build()).build();
     }
     private Message getPreconfiguredMessageToToken(PushNotificationRequest request) {
+        if (request.getData() != null){
+            return getPreconfiguredMessageWithData(request.getData(),request);
+        }
         return getPreconfiguredMessageBuilder(request).setToken(request.getToken())
                 .build();
     }

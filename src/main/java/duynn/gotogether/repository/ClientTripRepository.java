@@ -17,4 +17,6 @@ public interface ClientTripRepository extends JpaRepository<ClientTrip, Long> {
 
     @Query(value = "SELECT * FROM client_trip WHERE trip_id = ?1 AND is_canceled = 0 AND is_accepted = 1", nativeQuery = true)
     List<ClientTrip> getAcceptClientTripsByTripId(Long tripId);
+
+    ClientTrip findByTripIdAndClientId(Long id, Long clientId);
 }
