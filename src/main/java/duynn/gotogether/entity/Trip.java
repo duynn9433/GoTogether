@@ -37,8 +37,10 @@ public class Trip implements Serializable {
 //    @ElementCollection()
 //    @CollectionTable(name = "stop_place", joinColumns = @JoinColumn(name = "trip_id"))
 //    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Place> listStopPlace;
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "trip")
+    @OrderBy("position ASC")
+    private List<TripStopPlace> listStopPlace;
 
     @Column(name = "start_time")
     @Temporal(TemporalType.TIMESTAMP)

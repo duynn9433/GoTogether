@@ -2,15 +2,13 @@ package duynn.gotogether.service;
 
 import duynn.gotogether.entity.*;
 import duynn.gotogether.entity.place.Location;
+import duynn.gotogether.entity.place.Place;
 import duynn.gotogether.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -114,6 +112,8 @@ public class TripServiceImpl {
                                  Calendar startTime,
                                  Integer numOfSeat) throws Exception {
         List<Trip> trips = getTripByStartEndLocation(startLocation, endLocation);
+        System.out.println("trips: " + trips.size());
+        //filter by start time and number of seat
         List<Trip> result = new ArrayList<>();
         for (Trip t : trips) {
             if (DateUtils.isSameDay(t.getStartTime(), startTime)
@@ -122,6 +122,23 @@ public class TripServiceImpl {
                 result.add(t);
             }
         }
+        //filter by location1 -> location2
+//        for(int i = 0; i < result.size(); i++) {
+//            Trip t = result.get(i);
+//            Map<Location, Long> temp = new HashMap<>();
+//            temp.put(t.getStartPlace().getGeometry().getLocation(),0L);
+//            for(int j = 0; j < t.getListStopPlace().size(); j++) {
+//                temp.put(t.getListStopPlace().get(j).getPlace().getGeometry().getLocation(),j+1L);
+//            }
+//            temp.put(t.getEndPlace().getGeometry().getLocation(),t.getListStopPlace().size()+1L);
+//            System.out.println("temp: " + temp.toString());
+//            System.out.println("startLocation: " + startLocation.toString());
+//            System.out.println("endLocation: " + endLocation.toString());
+//            if(temp.get(startLocation) > temp.get(endLocation)) {
+//                result.remove(i);
+//                i--;
+//            }
+//        }
         if (result.isEmpty()) {
             throw new Exception("Không tìm thấy chuyến đi phù hợp");
         }

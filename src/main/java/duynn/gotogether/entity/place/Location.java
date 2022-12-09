@@ -30,5 +30,15 @@ public class Location implements Serializable {
     @SerializedName("lng")
     private double lng;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Location)) return false;
+        Location location = (Location) o;
+        if (Double.compare(location.lat, lat) != 0) return false;
+        return lat == location.lat &&
+                lng == location.lng;
+    }
+
 }
 

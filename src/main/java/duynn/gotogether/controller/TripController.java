@@ -10,14 +10,8 @@ import duynn.gotogether.dto.response.Status;
 import duynn.gotogether.dto.start_trip_dto.StartTripResponse;
 import duynn.gotogether.dto.response.TripResponse;
 import duynn.gotogether.dto.response.ListTripResponse;
-import duynn.gotogether.entity.Client;
-import duynn.gotogether.entity.ClientTrip;
-import duynn.gotogether.entity.Comment;
-import duynn.gotogether.entity.Trip;
-import duynn.gotogether.service.ClientServiceImpl;
-import duynn.gotogether.service.ClientTripServiceImpl;
-import duynn.gotogether.service.CommentServiceImpl;
-import duynn.gotogether.service.TripServiceImpl;
+import duynn.gotogether.entity.*;
+import duynn.gotogether.service.*;
 import duynn.gotogether.service.firebase.FCMService;
 import duynn.gotogether.service.firebase.PushNotificationService;
 import duynn.gotogether.util.Constants;
@@ -44,6 +38,8 @@ public class TripController {
     @Autowired
     CommentServiceImpl commentService;
     @Autowired
+    TripStopPlaceService tripStopPlaceService;
+    @Autowired
     ModelMapper modelMapper;
     @Autowired
     PushNotificationService pushNotificationService;
@@ -53,9 +49,12 @@ public class TripController {
     @PostMapping("/publish")
     @Transactional
     public ResponseEntity<?> publishTrip(@RequestBody TripDTO tripDTO) {
+        System.out.println("Publish trip tripDTO: " + tripDTO.toString());
         TripResponse response = new TripResponse();
         try{
             Trip data = modelMapper.map(tripDTO, Trip.class);
+            data.setEmptySeat(data.getTotalSeat());
+            System.out.println("Publish trip trip: " + data.toString());
             Client driver = clientService.findById(data.getDriver().getId());
             //check driver is in trip
 //            boolean isDriverInTrip = clientService.checkClientIsInTrip(data.getDriver().getId(), true);
@@ -72,6 +71,14 @@ public class TripController {
 
             //public trip
             Trip trip = tripService.publishTrip(data);
+            //save list stop place
+            List<TripStopPlace> tripStopPlaces = data.getListStopPlace();
+            for(int i = 0; i < tripStopPlaces.size(); i++) {
+                tripStopPlaces.get(i).setTrip(Trip.builder().id(trip.getId()).build());
+                System.out.println("tripStopPlaces.get(i): " + tripStopPlaces.get(i).toString());
+                TripStopPlace ret = tripStopPlaceService.save(tripStopPlaces.get(i));
+            }
+            trip.setListStopPlace(tripStopPlaces);
             response.setStatus(Constants.SUCCESS);
             response.setMessage("Publish trip successfully");
             response.setTrip(modelMapper.map(trip, TripDTO.class));
@@ -220,19 +227,27 @@ public class TripController {
                 .build();
         pushNotificationService.sendPushNotiToMultipleToken(pushNotificationRequest,tokens);
     }
-    private void notifyCancelToPassenger(Trip res) throws Exception {
-        List<ClientTrip> clientTrips = clientTripService.getAcceptClientTripsByTripId(res.getId());
-        List<String> tokens = new ArrayList<>();
-        for(ClientTrip clientTrip : clientTrips) {
-            tokens.add(clientTrip.getClient().getFcmToken());
-            clientTrip.getClient().setInTrip(false);
-            clientService.create(clientTrip.getClient());
+    private void notifyCancelToPassenger(Trip res) {
+        List<ClientTrip> clientTrips = null;
+        try {
+            clientTrips = clientTripService.getAcceptClientTripsByTripId(res.getId());
+            List<String> tokens = new ArrayList<>();
+            for(ClientTrip clientTrip : clientTrips) {
+                tokens.add(clientTrip.getClient().getFcmToken());
+                clientTrip.getClient().setInTrip(false);
+                clientTrip.setCanceled(true);
+                clientTrip.setAccepted(false);
+                clientService.create(clientTrip.getClient());
+            }
+            PushNotificationRequest pushNotificationRequest = PushNotificationRequest.builder()
+                    .title(Constants.TRIP_CANCEL)
+                    .message("Chuyến đi " + res.getId()+ " đã bị huỷ")
+                    .build();
+            pushNotificationService.sendCancelNotiToMultipleClientTrip(clientTrips, pushNotificationRequest, res.getId());
+        } catch (Exception e) {
+
         }
-        PushNotificationRequest pushNotificationRequest = PushNotificationRequest.builder()
-                .title(Constants.TRIP_CANCEL)
-                .message("Chuyến đi " + res.getId()+ " đã bị huỷ")
-                .build();
-        pushNotificationService.sendCancelNotiToMultipleClientTrip(clientTrips, pushNotificationRequest, res.getId());
+
     }
 
 //    @PostMapping("/request-finish-passenger")
@@ -297,20 +312,19 @@ public class TripController {
     public ResponseEntity<?> cancelTrip(@PathVariable("id") Long tripId) {
         Status response = new Status();
         try{
-            Trip res = tripService.findById(tripId);
-            if(res != null) {
+            Trip trip = tripService.findById(tripId);
+            if(trip != null) {
                 response.setStatus(Constants.SUCCESS);
                 response.setMessage("Cancel trip successfully");
                 //trip cancel
-                res.setCanceled(true);
+                trip.setCanceled(true);
                 //driver not in trip
-                res.getDriver().setInTrip(false);
-                tripService.create(res);//update trip
+                trip.getDriver().setInTrip(false);
+                tripService.create(trip);//update trip
                 //noti to passenger
-                notifyCancelToPassenger(res);
+                notifyCancelToPassenger(trip);
             } else {
-                response.setStatus(Constants.FAIL);
-                response.setMessage("Cancel trip failed");
+                throw new Exception("Huỷ thất bại");
             }
         } catch (Exception e) {
             e.printStackTrace();

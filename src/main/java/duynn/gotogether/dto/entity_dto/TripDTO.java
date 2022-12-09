@@ -32,7 +32,7 @@ public class TripDTO implements Serializable {
     private PlaceDTO endPlace;
 
     @JsonProperty("stop_places")
-    private List<PlaceDTO> listStopPlace;
+    private List<TripStopPlaceDTO> listStopPlace;
 
     @JsonProperty("start_time")
     @JsonSerialize(using = CalendarSerializer.class)
