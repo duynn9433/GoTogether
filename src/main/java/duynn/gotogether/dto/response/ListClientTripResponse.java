@@ -1,23 +1,21 @@
 package duynn.gotogether.dto.response;
 
-import duynn.gotogether.dto.request.ClientLocationDTO;
+import duynn.gotogether.dto.entity_dto.ClientTripDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ListLocationResponse implements Serializable {
-    public static final long serialVersionUID = 1L;
+@NoArgsConstructor
+public class ListClientTripResponse {
+    private static final long serialVersionUID = 1L;
 
     private String message;
     private String status;
-    private List<ClientLocationDTO> locationList;
-
+    private List<ClientTripDTO> data;
 }

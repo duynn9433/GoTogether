@@ -1,5 +1,8 @@
 package duynn.gotogether.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +18,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "comment")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","$$_hibernate_interceptor"})
 public class Comment implements Serializable {
     private static final long serialVersionUID = 11L;
 
@@ -28,12 +33,16 @@ public class Comment implements Serializable {
 
     @Column(name = "rating", nullable = false)
     private Integer rating;
-
+    @JsonProperty("sender")
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "driver_id", referencedColumnName = "id")
-    private Client driver;
-
+    @JoinColumn(name = "sender_id", referencedColumnName = "id")
+    private Client sender;
+    @JsonProperty("receiver")
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    @JoinColumn(name = "receiver_id", referencedColumnName = "id")
+    private Client receiver;
+    @JsonProperty("client_trip_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_trip_id", referencedColumnName = "id")
     private ClientTrip clientTrip;
 }

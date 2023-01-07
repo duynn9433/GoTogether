@@ -1,8 +1,6 @@
 
 package duynn.gotogether.entity.place;
 
-import com.google.gson.annotations.SerializedName;
-import duynn.gotogether.entity.place.Geometry;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +14,8 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "place")
-public class Place implements Serializable {
+@Table(name = "goong_place")
+public class GoongPlace implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

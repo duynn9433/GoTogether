@@ -19,4 +19,17 @@ public interface ClientTripRepository extends JpaRepository<ClientTrip, Long> {
     List<ClientTrip> getAcceptClientTripsByTripId(Long tripId);
 
     ClientTrip findByTripIdAndClientId(Long id, Long clientId);
+
+    @Query(value = "select ct.* from client_trip ct, trip t, client c " +
+            "where t.id = ct.trip_id " +
+            "and t.driver_id = ?1 " +
+            "and ct.is_driver_commentted = false " +
+            "group by ct.id " +
+            "order by ct.id ", nativeQuery = true)
+    List<ClientTrip> getClientTripDriverNotCommentByDriverId(Long driverId);
+
+    @Query(value = "select ct.* from client_trip ct " +
+            "where ct.client_id = ?1 " +
+            "and ct.is_passenger_commentted = false ", nativeQuery = true)
+    List<ClientTrip> getClientTripPassengerNotCommentByPassengerId(Long passengerId);
 }

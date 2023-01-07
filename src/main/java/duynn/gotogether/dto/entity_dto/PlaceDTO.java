@@ -21,9 +21,13 @@ public class PlaceDTO implements Serializable {
     private String placeID;
     @JsonProperty("formatted_address")
     private String formattedAddress;
-    @JsonProperty("geometry")
-    private GeometryDTO geometry;
     @JsonProperty("name")
     private String name;
+    @JsonProperty("lat")
+    private double lat;
+    @JsonProperty("lng")
+    private double lng;
+
+
 
 }

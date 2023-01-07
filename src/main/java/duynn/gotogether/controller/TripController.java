@@ -1,7 +1,10 @@
 package duynn.gotogether.controller;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.maps.model.LatLng;
+import duynn.gotogether.dto.ApiError;
 import duynn.gotogether.dto.entity_dto.ClientTripDTO;
+import duynn.gotogether.dto.entity_dto.PlaceDTO;
 import duynn.gotogether.dto.entity_dto.TripDTO;
 import duynn.gotogether.dto.firebase.PushNotificationRequest;
 import duynn.gotogether.dto.request.SearchTripRequest;
@@ -17,6 +20,7 @@ import duynn.gotogether.service.firebase.PushNotificationService;
 import duynn.gotogether.util.Constants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -48,48 +52,51 @@ public class TripController {
 
     @PostMapping("/publish")
     @Transactional
-    public ResponseEntity<?> publishTrip(@RequestBody TripDTO tripDTO) {
-        System.out.println("Publish trip tripDTO: " + tripDTO.toString());
+    public ResponseEntity<?> publishTrip(@RequestBody Trip trip) {
+        System.out.println("Publish trip tripDTO: " + trip.toString());
         TripResponse response = new TripResponse();
         try{
-            Trip data = modelMapper.map(tripDTO, Trip.class);
-            data.setEmptySeat(data.getTotalSeat());
-            System.out.println("Publish trip trip: " + data.toString());
-            Client driver = clientService.findById(data.getDriver().getId());
+//            Trip data = modelMapper.map(trip, Trip.class);
+            trip.setEmptySeat(trip.getTotalSeat());
+            System.out.println("Publish trip trip: " + trip.toString());
+            Client driver = clientService.findById(trip.getDriver().getId());
             //check driver is in trip
 //            boolean isDriverInTrip = clientService.checkClientIsInTrip(data.getDriver().getId(), true);
             boolean isDriverInTrip = driver.isInTrip();
             if(isDriverInTrip) {
-                response.setStatus(Constants.FAIL);
-                response.setMessage("Lái xe đã đăng chuyến đi");
-                return ResponseEntity.ok().body(response);
+//                response.setStatus(Constants.FAIL);
+//                response.setMessage("Lái xe đã đăng chuyến đi");
+//                return ResponseEntity.ok().body(response);
+                return ResponseEntity.badRequest().body(
+                        new ApiError(HttpStatus.BAD_REQUEST.value(),
+                                "Lái xe đã đăng chuyến đi","Lái xe đã đăng chuyến đi"));
             }
             //create fcm topic
-            String topic = "trip" + data.getDriver().getId();
+            String topic = "trip" + trip.getDriver().getId();
             pushNotificationService.createTopic(driver.getFcmToken(), topic);
-            data.setFcmTopic(topic);
+            trip.setFcmTopic(topic);
 
             //public trip
-            Trip trip = tripService.publishTrip(data);
+            Trip tripRet = tripService.publishTrip(trip);
             //save list stop place
-            List<TripStopPlace> tripStopPlaces = data.getListStopPlace();
+            List<TripStopPlace> tripStopPlaces = trip.getListStopPlace();
             for(int i = 0; i < tripStopPlaces.size(); i++) {
-                tripStopPlaces.get(i).setTrip(Trip.builder().id(trip.getId()).build());
+                tripStopPlaces.get(i).setTrip(Trip.builder().id(tripRet.getId()).build());
                 System.out.println("tripStopPlaces.get(i): " + tripStopPlaces.get(i).toString());
                 TripStopPlace ret = tripStopPlaceService.save(tripStopPlaces.get(i));
             }
-            trip.setListStopPlace(tripStopPlaces);
-            response.setStatus(Constants.SUCCESS);
-            response.setMessage("Publish trip successfully");
-            response.setTrip(modelMapper.map(trip, TripDTO.class));
+            tripRet.setListStopPlace(tripStopPlaces);
+//            response.setStatus(Constants.SUCCESS);
+//            response.setMessage("Publish trip successfully");
+//            response.setTrip(modelMapper.map(tripRet, TripDTO.class));
+            return ResponseEntity.ok().body(tripRet);
         } catch (Exception e) {
             e.printStackTrace();
-            response.setStatus(Constants.FAIL);
-            response.setMessage(e.getMessage());
-            return ResponseEntity.ok().body(response);
-//            return ResponseEntity.badRequest().body(e.getMessage());
+//            response.setStatus(Constants.FAIL);
+//            response.setMessage(e.getMessage());
+//            return ResponseEntity.ok().body(response);
+            return ResponseEntity.badRequest().body(new ApiError(HttpStatus.BAD_REQUEST.value(),"Không thành công",e.getMessage()));
         }
-        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/current/{id}")
@@ -110,21 +117,28 @@ public class TripController {
     }
 
     @GetMapping("/get-accepted-trip/{id}")
+    @Transactional
     public ResponseEntity<?> getAcceptedTrip(@PathVariable("id") Long clientId) {
         AcceptedTripResponse response = new AcceptedTripResponse();
         try{
             Trip trip = tripService.getAcceptedTripNotFinished(clientId);
             ClientTrip clientTrip = clientTripService.findByTripIdAndClientId(trip.getId(), clientId);
+//            System.out.println("clientTrip: " + clientTrip.getPickUpPlace().toString()
+//                    + " " + clientTrip.getDropOffPlace().toString());
             response.setStatus(Constants.SUCCESS);
             response.setMessage("Get current trip successfully");
             response.setTrip(modelMapper.map(trip, TripDTO.class));
-            response.setClientTrip(modelMapper.map(clientTrip, ClientTripDTO.class));
+            ClientTripDTO clientTripDTO = modelMapper.map(clientTrip, ClientTripDTO.class);
+//            clientTripDTO.setPickUpPlace(modelMapper.map(clientTrip.getPickUpPlace(), PlaceDTO.class));
+//            clientTripDTO.setDropOffPlace(modelMapper.map(clientTrip.getDropOffPlace(), PlaceDTO.class));
+            response.setClientTrip(clientTripDTO);
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(Constants.FAIL);
             response.setMessage(e.getMessage());
             return ResponseEntity.ok().body(response);
         }
+        System.out.println("getAcceptedTrip response: " + response.toString());
         return ResponseEntity.ok().body(response);
     }
 
@@ -148,31 +162,77 @@ public class TripController {
         return ResponseEntity.ok().body(response);
     }
 
+//    @PostMapping("/search")
+//    public ResponseEntity<?> searchTrip(@RequestBody SearchTripRequest searchTripRequest) {
+//        try{
+//            //search trip
+//            List<Trip> trips = tripService.searchTrip(
+//                    new LatLng(searchTripRequest.getStartPlace().getLat(), searchTripRequest.getStartPlace().getLng()),
+//                    new LatLng(searchTripRequest.getEndPlace().getLat(), searchTripRequest.getEndPlace().getLng()),
+//                    searchTripRequest.getStartTime(),
+//                    searchTripRequest.getNumOfSeat(),
+//                    searchTripRequest.getStartPlace().getPlaceID(),
+//                    searchTripRequest.getEndPlace().getPlaceID());
+//            //response
+//            List<TripDTO> tripDTOS = new ArrayList<>();
+//            for (Trip trip : trips) {
+//                tripDTOS.add(modelMapper.map(trip, TripDTO.class));
+//            }
+//            ListTripResponse searchTripResponse = ListTripResponse.builder()
+//                    .trips(tripDTOS)
+//                    .status(Constants.SUCCESS)
+//                    .build();
+//            return ResponseEntity.ok().body(searchTripResponse);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            ListTripResponse searchTripResponse = ListTripResponse.builder()
+//                    .status(Constants.FAIL)
+//                    .message(e.getMessage())
+//                    .build();
+//            return ResponseEntity.badRequest().body(searchTripResponse);
+//        }
+//    }
     @PostMapping("/search")
-    public ResponseEntity<?> searchTrip(@RequestBody SearchTripRequest searchTripRequest) {
+    public ResponseEntity<?> searchTrip(@RequestBody ClientTrip searchTripRequest) {
         try{
+            //search trip
             List<Trip> trips = tripService.searchTrip(
-                    searchTripRequest.getStartPlace().getGeometry().getLocation(),
-                    searchTripRequest.getEndPlace().getGeometry().getLocation(),
-                    searchTripRequest.getStartTime(),
-                    searchTripRequest.getNumOfSeat());
-
-            List<TripDTO> tripDTOS = new ArrayList<>();
-            for (Trip trip : trips) {
-                tripDTOS.add(modelMapper.map(trip, TripDTO.class));
+                    new LatLng(searchTripRequest.getPickUpPlace().getLat(), searchTripRequest.getPickUpPlace().getLng()),
+                    new LatLng(searchTripRequest.getDropOffPlace().getLat(), searchTripRequest.getDropOffPlace().getLng()),
+                    searchTripRequest.getPickUpTime(),
+                    searchTripRequest.getNumOfPeople(),
+                    searchTripRequest.getPickUpPlace().getPlaceID(),
+                    searchTripRequest.getDropOffPlace().getPlaceID());
+            if (trips.size() == 0) {
+               throw new Exception("Không tìm thấy chuyến đi phù hợp");
             }
-            ListTripResponse searchTripResponse = ListTripResponse.builder()
-                    .trips(tripDTOS)
-                    .status(Constants.SUCCESS)
-                    .build();
-            return ResponseEntity.ok().body(searchTripResponse);
+            for(Trip trip : trips) {
+                //delete trip in stopPlace
+                for(TripStopPlace tripStopPlace : trip.getListStopPlace()) {
+                    tripStopPlace.setTrip(null);
+                }
+                //delete driver transport
+                trip.getDriver().setTransports(null);
+            }
+            //response
+//            List<TripDTO> tripDTOS = new ArrayList<>();
+//            for (Trip trip : trips) {
+//                tripDTOS.add(modelMapper.map(trip, TripDTO.class));
+//            }
+//            ListTripResponse searchTripResponse = ListTripResponse.builder()
+//                    .trips(tripDTOS)
+//                    .status(Constants.SUCCESS)
+//                    .build();
+//            return ResponseEntity.ok().body(searchTripResponse);
+            return ResponseEntity.ok().body(trips);
         } catch (Exception e) {
             e.printStackTrace();
-            ListTripResponse searchTripResponse = ListTripResponse.builder()
-                    .status(Constants.FAIL)
-                    .message(e.getMessage())
-                    .build();
-            return ResponseEntity.badRequest().body(searchTripResponse);
+//            ListTripResponse searchTripResponse = ListTripResponse.builder()
+//                    .status(Constants.FAIL)
+//                    .message(e.getMessage())
+//                    .build();
+            return ResponseEntity.badRequest().body(
+                    new ApiError(HttpStatus.BAD_REQUEST.value(),"Không tìm thấy chuyến đi phù hợp", e.getMessage()));
         }
     }
 

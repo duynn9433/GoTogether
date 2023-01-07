@@ -61,5 +61,8 @@ public class Constants {
     public static final String DISTANCE = "DISTANCE";
     public static final String PRICE = "PRICE";
     public static final String PASSENGER_NUM = "PASSENGER_NUM";
+    public static final String USER_DISABLED = "USER_DISABLED";
+    public static final String INVALID_CREDENTIALS = "INVALID_CREDENTIALS";
+
 }
 

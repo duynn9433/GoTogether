@@ -1,12 +1,12 @@
 package duynn.gotogether.dto.request;
 
-import duynn.gotogether.dto.entity_dto.LocationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Builder
@@ -14,8 +14,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ClientUpdateLocationRequest implements Serializable {
     public static final long serialVersionUID = 1L;
-
-    private LocationDTO location;
-    private Long tripId;
-    private Long clientId;
+    private ClientLocationDTO location;
+    //for driver request
+    private List<Long> passengerIDs;
+    //for passenger request
+    private Long driverId;
 }

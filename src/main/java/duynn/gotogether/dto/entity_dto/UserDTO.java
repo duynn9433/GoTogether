@@ -30,7 +30,7 @@ public class UserDTO implements Serializable {
     private FullnameDTO fullname;
 
     @JsonProperty("contact_information")
-    private ContactInfomationDTO contactInfomation;
+    private ContactInfomationDTO contactInformation;
 
     private AddressDTO address;
 

@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientDTO extends UserDTO implements Serializable {
     private static final long serialVersionUID = 5L;
-    private LocationDTO location;
 
     private Double rate;
 
@@ -23,6 +22,10 @@ public class ClientDTO extends UserDTO implements Serializable {
 
     @JsonProperty("fcm_token")
     private String fcmToken;
+    @JsonProperty("lat")
+    private double lat;
+    @JsonProperty("lng")
+    private double lng;
 
 //    @JsonManagedReference
     private List<TransportWithoutOwnerDTO> transports;

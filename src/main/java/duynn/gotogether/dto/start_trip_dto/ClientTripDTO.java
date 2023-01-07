@@ -42,5 +42,11 @@ public class ClientTripDTO implements Serializable {
 
     private ClientDTO client;
 
+    @JsonProperty("is_driver_commentted")
+    private Boolean isDriverCommentted;
+
+    @JsonProperty("is_passenger_commentted")
+    private Boolean isPassengerCommentted;
+
 
 }

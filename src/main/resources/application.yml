@@ -24,9 +24,13 @@ spring:
 
   jackson:
 #    serialization:
+#      FAIL_ON_EMPTY_BEANS: false
+#    serialization:
 #      write_dates_as_timestamps: false
     deserialization:
       ADJUST_DATES_TO_CONTEXT_TIME_ZONE: false
+
+
 #    date-format: yyyy-MM-dd HH:mm:ss
 #    time-zone: UTC
 #    converters:

@@ -1,6 +1,6 @@
 package duynn.gotogether.dto.response;
 
-import duynn.gotogether.dto.entity_dto.LocationDTO;
+import duynn.gotogether.dto.request.ClientLocationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +17,6 @@ public class LocationResponse implements Serializable {
 
     private String message;
     private String status;
-    private LocationDTO location;
+    private ClientLocationDTO location;
 
 }

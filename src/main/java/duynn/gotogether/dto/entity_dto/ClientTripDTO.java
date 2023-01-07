@@ -46,4 +46,10 @@ public class ClientTripDTO implements Serializable {
     @JsonProperty("distance")
     private Double distance;
 
+    @JsonProperty("is_driver_commentted")
+    private Boolean isDriverCommentted;
+
+    @JsonProperty("is_passenger_commentted")
+    private Boolean isPassengerCommentted;
+
 }

@@ -26,9 +26,13 @@ public class CommentDTO implements Serializable {
 
     private Integer rating;
 
-    @JsonProperty("driver")
-    private Client driver;
+    @JsonProperty("client_trip_id")
+    private ClientTripDTO clientTrip;
 
-    @JsonProperty("client_trip")
-    private ClientTrip clientTrip;
+    @JsonProperty("sender")
+    private ClientDTO sender;
+
+    @JsonProperty("receiver")
+    private ClientDTO receiver;
+
 }

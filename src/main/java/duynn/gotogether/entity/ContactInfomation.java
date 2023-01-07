@@ -1,5 +1,8 @@
 package duynn.gotogether.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +18,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "contact_infomation")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","$$_hibernate_interceptor"})
 public class ContactInfomation implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -24,7 +29,7 @@ public class ContactInfomation implements Serializable {
     private Long id;
 
     @Column(name = "phone_number", nullable = false)
-    @SerializedName("phone_number")
+    @JsonProperty("phone_number")
     private String phoneNumber;
 
     @Column(name = "email")

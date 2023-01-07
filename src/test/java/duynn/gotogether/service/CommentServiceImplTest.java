@@ -43,7 +43,7 @@ class CommentServiceImplTest {
     void testGetCommentsByDriverId() throws Exception {
         // Setup
         final List<Comment> expectedResult = List.of(Comment.builder().build());
-        when(commentRepository.findCommentByDriverId(0L)).thenReturn(List.of(Comment.builder().build()));
+        when(commentRepository.findCommentByReceiverId(0L)).thenReturn(List.of(Comment.builder().build()));
 
         // Run the test
         final List<Comment> result = commentService.getCommentsByDriverId(0L);
@@ -55,7 +55,7 @@ class CommentServiceImplTest {
     @Test
     void testGetCommentsByDriverId_ThrowsException() {
         // Setup
-        when(commentRepository.findCommentByDriverId(0L)).thenReturn(new ArrayList<>());
+        when(commentRepository.findCommentByReceiverId(0L)).thenReturn(new ArrayList<>());
 
         // Run the test
         assertThatThrownBy(() -> commentService.getCommentsByDriverId(0L)).isInstanceOf(Exception.class);

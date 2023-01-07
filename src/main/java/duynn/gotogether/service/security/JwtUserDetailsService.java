@@ -78,7 +78,6 @@ public class JwtUserDetailsService implements UserDetailsService {
         ReflectionUtils.shallowCopyFieldState(modelMapper.map(user, duynn.gotogether.entity.User.class), client);
         client.setRate(0.0);
         client.setInTrip(false);
-        client.setLocation(new Location());
 //        duynn.gotogether.entity.User userDAO = modelMapper.map(user, duynn.gotogether.entity.User.class);
 //        duynn.gotogether.entity.User user1 = userRepository.save(
 //                modelMapper.map(user, duynn.gotogether.entity.User.class));

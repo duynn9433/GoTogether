@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.Calendar;
 
@@ -44,5 +46,11 @@ public class ClientTripDTO implements Serializable {
 
     @JsonProperty("distance")
     private Double distance;
+
+    @JsonProperty("is_driver_commentted")
+    private Boolean isDriverCommentted;
+
+    @JsonProperty("is_passenger_commentted")
+    private Boolean isPassengerCommentted;
 
 }

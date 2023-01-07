@@ -66,4 +66,12 @@ public class ClientTripServiceImpl{
     public ClientTrip findByTripIdAndClientId(Long id, Long clientId) {
         return clientTripRepository.findByTripIdAndClientId(id, clientId);
     }
+
+    public List<ClientTrip> getClientTripDriverNotCommentByDriverId(Long driverId) {
+        return clientTripRepository.getClientTripDriverNotCommentByDriverId(driverId);
+    }
+
+    public List<ClientTrip> getClientTripPassengerNotCommentByPassengerId(Long passengerId) {
+        return clientTripRepository.getClientTripPassengerNotCommentByPassengerId(passengerId);
+    }
 }

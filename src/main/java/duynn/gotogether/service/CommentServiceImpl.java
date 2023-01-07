@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -18,11 +17,21 @@ public class CommentServiceImpl{
         return commentRepository.save(comment);
     }
     public List<Comment> getCommentsByDriverId(Long driverId) throws Exception {
-        List<Comment> comments = commentRepository.findCommentByDriverId(driverId);
+        List<Comment> comments = commentRepository.findCommentByReceiverId(driverId);
         if(comments.isEmpty()){
             throw new Exception("Không tìm thấy comment");
         }
         return comments;
     }
 
+    public List<Comment> getAllByReceiverId(Long id) {
+        return commentRepository.findAllByReceiverId(id);
+    }
+
+    public List<Comment> getAllReceivedComment(Long id) {
+        return commentRepository.findAllByReceiverId(id);
+    }
+    public List<Comment> getAllSendComment(Long id) {
+        return commentRepository.findAllBySenderId(id);
+    }
 }

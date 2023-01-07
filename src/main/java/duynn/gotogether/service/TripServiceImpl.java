@@ -1,8 +1,8 @@
 package duynn.gotogether.service;
 
+import com.google.maps.model.LatLng;
 import duynn.gotogether.entity.*;
 import duynn.gotogether.entity.place.Location;
-import duynn.gotogether.entity.place.Place;
 import duynn.gotogether.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +38,10 @@ public class TripServiceImpl {
         return tripRepository.deleteTripById(id);
     }
 
-    public List<Trip> getTripByStartEndLocation(Location startLocation, Location endLocation) throws Exception {
+    public List<Trip> getTripByStartEndLocation(LatLng startLocation, LatLng endLocation) throws Exception {
         List<Trip> trips = tripRepository.getTripByStartEndLocation(
-                startLocation.getLat(), startLocation.getLng(),
-                endLocation.getLat(), endLocation.getLng());
+                startLocation.lat, startLocation.lng,
+                endLocation.lat, endLocation.lng);
         if (trips.isEmpty()) {
             throw new Exception("Không tìm thấy chuyến đi phù hợp");
         }
@@ -107,42 +107,49 @@ public class TripServiceImpl {
             throw new Exception("Không tìm thấy chuyến đi");
         }
     }
-    public List<Trip> searchTrip(Location startLocation,
-                                 Location endLocation,
+    public List<Trip> searchTrip(LatLng startLocation,
+                                 LatLng endLocation,
                                  Calendar startTime,
-                                 Integer numOfSeat) throws Exception {
-        List<Trip> trips = getTripByStartEndLocation(startLocation, endLocation);
-        System.out.println("trips: " + trips.size());
-        //filter by start time and number of seat
-        List<Trip> result = new ArrayList<>();
-        for (Trip t : trips) {
-            if (DateUtils.isSameDay(t.getStartTime(), startTime)
-                    && t.getStartTime().get(Calendar.HOUR_OF_DAY) <= startTime.get(Calendar.HOUR_OF_DAY)
-                    && t.getEmptySeat() >= numOfSeat) {
-                result.add(t);
+                                 Integer numOfSeat,
+                                 String startPlaceId,
+                                 String endPlaceId) throws Exception {
+        try {
+            List<Trip> trips = getTripByStartEndLocation(startLocation, endLocation);
+            System.out.println("trips: " + trips.size());
+            //filter by start time and number of seat
+            List<Trip> result = new ArrayList<>();
+            for (Trip t : trips) {
+                if (DateUtils.isSameDay(t.getStartTime(), startTime)
+                        && t.getStartTime().get(Calendar.HOUR_OF_DAY) <= startTime.get(Calendar.HOUR_OF_DAY)
+                        && t.getEmptySeat() >= numOfSeat) {
+                    result.add(t);
+                }
             }
-        }
-        //filter by location1 -> location2
-//        for(int i = 0; i < result.size(); i++) {
-//            Trip t = result.get(i);
-//            Map<Location, Long> temp = new HashMap<>();
-//            temp.put(t.getStartPlace().getGeometry().getLocation(),0L);
-//            for(int j = 0; j < t.getListStopPlace().size(); j++) {
-//                temp.put(t.getListStopPlace().get(j).getPlace().getGeometry().getLocation(),j+1L);
-//            }
-//            temp.put(t.getEndPlace().getGeometry().getLocation(),t.getListStopPlace().size()+1L);
-//            System.out.println("temp: " + temp.toString());
-//            System.out.println("startLocation: " + startLocation.toString());
-//            System.out.println("endLocation: " + endLocation.toString());
-//            if(temp.get(startLocation) > temp.get(endLocation)) {
-//                result.remove(i);
-//                i--;
-//            }
-//        }
-        if (result.isEmpty()) {
+//        filter by location1 -> location2
+            for(int i = 0; i < result.size(); i++) {
+                Trip t = result.get(i);
+                //<placeId, index>
+                Map<String, Long> temp = new HashMap<>();
+                temp.put(t.getStartPlace().getPlaceID(),1L);
+                for(int j = 0; j < t.getListStopPlace().size(); j++) {
+                    temp.put(t.getListStopPlace().get(j).getPlace().getPlaceID(),j+2L);
+                }
+                temp.put(t.getEndPlace().getPlaceID(),t.getListStopPlace().size()+2L);
+                System.out.println("temp: " + temp.toString());
+                System.out.println("startLocation: " + startPlaceId);
+                System.out.println("endLocation: " +endPlaceId);
+                if(temp.get(startPlaceId) > temp.get(endPlaceId)) {
+                    result.remove(i);
+                    i--;
+                }
+            }
+            if (result.isEmpty()) {
+                throw new Exception();
+            }
+            return result;
+        }catch (Exception e) {
             throw new Exception("Không tìm thấy chuyến đi phù hợp");
         }
-        return result;
     }
     public Trip getAcceptedTripNotFinished(Long clientId) throws Exception {
         Optional<Trip> trip = tripRepository.getAcceptedTripByClientId(clientId);

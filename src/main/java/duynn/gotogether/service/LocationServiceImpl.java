@@ -30,7 +30,7 @@ public class LocationServiceImpl  {
 //        for (Location location : locations) {
 //            locationPool.put(location.getId(),location);
 //        }
-        logger.info("locationPool" + locationPool.toString());
+//        logger.info("loca tionPool" + locationPool.toString());
     }
     public Location newUpdateLocation(Location location){
         logger.info("update locationPool" + location.toString());

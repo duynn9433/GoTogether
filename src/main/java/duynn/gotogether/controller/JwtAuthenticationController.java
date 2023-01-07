@@ -1,5 +1,6 @@
 package duynn.gotogether.controller;
 
+import duynn.gotogether.dto.ApiError;
 import duynn.gotogether.dto.entity_dto.ClientDTO;
 import duynn.gotogether.dto.entity_dto.UserDTO;
 import duynn.gotogether.dto.request.JwtRequest;
@@ -7,11 +8,14 @@ import duynn.gotogether.dto.response.JwtResponse;
 import duynn.gotogether.dto.response.RegisterRes;
 import duynn.gotogether.dto.response.Status;
 import duynn.gotogether.entity.Client;
+import duynn.gotogether.entity.Transport;
 import duynn.gotogether.entity.User;
 import duynn.gotogether.service.security.JwtUserDetailsService;
+import duynn.gotogether.util.Constants;
 import duynn.gotogether.util.security.JwtTokenUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -54,17 +58,42 @@ public class JwtAuthenticationController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest)
-            throws Exception {
+    public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest){
 
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        try {
+            authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        } catch (Exception e) {
+            if(e instanceof BadCredentialsException){
+                return ResponseEntity.badRequest().body(
+                        new ApiError(HttpStatus.BAD_REQUEST.value(),"Sai tài khoản/mật khẩu", e.getMessage()));
+            }
+            if(e instanceof DisabledException){
+                return ResponseEntity.badRequest().body(
+                        new ApiError(HttpStatus.BAD_REQUEST.value(),"Tài khoản đã bị khóa", e.getMessage()));
+            } else{
+                return ResponseEntity.badRequest().body(
+                        new ApiError(HttpStatus.BAD_REQUEST.value(),"Sai tài khoản/mật khẩu", e.getMessage()));
+            }
+        }
 
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
+//        if (userDetails == null){
+//            return ResponseEntity.ok(new ApiError(HttpStatus.BAD_REQUEST.value(),"Sai tài khoản/mật khẩu", "Sai tài khoản/mật khẩu"));
+//        }else if (!userDetails.getPassword().equals(authenticationRequest.getPassword())){
+//            return ResponseEntity.ok(new ApiError(HttpStatus.BAD_REQUEST.value(),"Sai tài khoản/mật khẩu", "Sai tài khoản/mật khẩu"));
+//        }
 
         final String token = jwtTokenUtil.generateToken(userDetails);
         Client client = userDetailsService.findClientByUsername(authenticationRequest.getUsername());
-        JwtResponse jwtResponse = new JwtResponse(token, modelMapper.map(client, ClientDTO.class));
+        for(Transport transport : client.getTransports()){
+            transport.setOwner(null);
+        }
+        client.getAccount().setPassword(null);
+//        System.out.println("login client: "+client);
+//        JwtResponse jwtResponse = new JwtResponse(token, modelMapper.map(client, ClientDTO.class));
+        JwtResponse jwtResponse = new JwtResponse(token, client);
+//        System.out.println("jwtResponse: "+jwtResponse.toString());
 
         return ResponseEntity.ok(jwtResponse);
     }
@@ -92,9 +121,9 @@ public class JwtAuthenticationController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new Exception(Constants.USER_DISABLED, e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new Exception(Constants.INVALID_CREDENTIALS, e);
         }
     }
 }
